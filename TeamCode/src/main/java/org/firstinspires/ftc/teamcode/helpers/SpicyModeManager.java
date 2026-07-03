@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.commandeer.test.ExampleCommandeerTest;
 import org.firstinspires.ftc.teamcode.opmode.SpicyTele;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
 
@@ -16,6 +17,8 @@ public class SpicyModeManager {
 
     private static Set<SpicyMode> buildOpModes() {
         modes = new HashSet<>();
+        modes.add(new ExampleCommandeerTest(MatchSide.RED));
+
         modes.add(new SpicyTele(MatchSide.RED));
         modes.add(new SpicyTele(MatchSide.BLUE));
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
-public class GlobalStorage {
+import com.pedropathing.geometry.Pose;
 
+public class GlobalStorage {
+    public static Pose lastPose;
 }

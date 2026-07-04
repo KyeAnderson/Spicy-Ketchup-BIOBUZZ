@@ -16,16 +16,17 @@ public abstract class SpicyMode extends OpMode {
     /**
      * What init code [i.e. path variables set] to run when the Red side SpicyMode is selected.
      */
-    public abstract void onRedInit();
+    public void onRedInit() {};
 
     /**
      * What init code [i.e. path variables set] to run when the Blue side SpicyMode is selected.
      */
-    public abstract void onBlueInit();
+    public void onBlueInit() {};
 
     /**
-     * Define how the OpMode should be named. Example: (OpMode %s) -> (OpMode BLUE) and (OpMode RED)
-     * Requires %s to be placed. Represents side (BLUE/RED)
+     * Define how the OpMode should be named.
+     * %s represents where to place the side name.
+     * Example: (OpMode %s) -> (OpMode BLUE) and (OpMode RED)
      */
     public abstract String getOpModeName();
 }

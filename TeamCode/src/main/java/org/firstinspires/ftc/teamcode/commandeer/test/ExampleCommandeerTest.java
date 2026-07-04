@@ -27,16 +27,6 @@ public class ExampleCommandeerTest extends SpicyMode{
     }
 
     @Override
-    public void onRedInit() {
-
-    }
-
-    @Override
-    public void onBlueInit() {
-
-    }
-
-    @Override
     public String getOpModeName() {
         return "Commandeer test %s";
     }

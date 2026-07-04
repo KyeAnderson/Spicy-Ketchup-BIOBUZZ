@@ -24,6 +24,7 @@ public class Globals {
 
 
     ///  ====== OPMODE REGISTRATION
+    /// TODO: Add OpModes here
     private static Set<SpicyMode> buildOpModes() {
         modes = new HashSet<>();
         modes.add(new ExampleCommandeerTest(Globals.MatchSide.RED));
@@ -34,7 +35,6 @@ public class Globals {
         modes.add(new AutoUno(Globals.MatchSide.RED));
         modes.add(new AutoUno(Globals.MatchSide.BLUE));
 
-        // TODO: Add more OpModes
         return modes;
     }
 
@@ -46,8 +46,12 @@ public class Globals {
     }
 
     public static OpModeMeta metaForMode(SpicyMode mode) {
+        String name = mode.getOpModeName();
+        if(mode.getOpModeName().contains("%s")) { // able to add the side's name
+            name = String.format(mode.getOpModeName(), mode.side.name());
+        }
         return new OpModeMeta.Builder()
-                .setName(String.format(mode.getOpModeName(), mode.side.name()))
+                .setName(name)
                 .setFlavor(OpModeMeta.Flavor.TELEOP)
                 .setSource(OpModeMeta.Source.BLOCKLY)
                 .build();

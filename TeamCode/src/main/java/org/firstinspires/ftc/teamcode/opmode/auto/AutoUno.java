@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
-import org.firstinspires.ftc.teamcode.helpers.MatchSide;
+import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 
 public class AutoUno extends SpicyMode {
@@ -11,7 +11,7 @@ public class AutoUno extends SpicyMode {
     }
     AutoState state = AutoState.INIT;
 
-    public AutoUno(MatchSide side) {
+    public AutoUno(Globals.MatchSide side) {
         super(side);
     }
 

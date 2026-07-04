@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import org.firstinspires.ftc.teamcode.helpers.MatchSide;
+import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 
 public class SpicyTele extends SpicyMode {
-    public SpicyTele(MatchSide side) {
+    public SpicyTele(Globals.MatchSide side) {
         super(side);
     }
 

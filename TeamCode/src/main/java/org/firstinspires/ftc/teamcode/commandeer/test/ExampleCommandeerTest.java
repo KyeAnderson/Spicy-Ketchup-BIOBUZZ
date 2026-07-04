@@ -5,14 +5,14 @@ import com.pedropathing.geometry.Pose;
 
 import org.firstinspires.ftc.teamcode.commandeer.CQueue;
 import org.firstinspires.ftc.teamcode.commandeer.commands.FollowPath;
-import org.firstinspires.ftc.teamcode.helpers.MatchSide;
+import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class ExampleCommandeerTest extends SpicyMode{
     CQueue queue = new CQueue();
     Follower f = Constants.createFollower(hardwareMap);
-    public ExampleCommandeerTest(MatchSide side) {
+    public ExampleCommandeerTest(Globals.MatchSide side) {
         super(side);
     }
 

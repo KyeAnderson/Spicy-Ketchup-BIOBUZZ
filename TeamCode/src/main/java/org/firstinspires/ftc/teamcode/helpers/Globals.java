@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
@@ -12,18 +12,27 @@ import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SpicyModeManager {
+public class Globals {
+    public static Pose lastPose;
+    public static final boolean hideTests = false;
     static Set<SpicyMode> modes;
 
+    public enum MatchSide {
+        RED,
+        BLUE,
+    }
+
+
+    ///  ====== OPMODE REGISTRATION
     private static Set<SpicyMode> buildOpModes() {
         modes = new HashSet<>();
-        modes.add(new ExampleCommandeerTest(MatchSide.RED));
+        modes.add(new ExampleCommandeerTest(Globals.MatchSide.RED));
 
-        modes.add(new SpicyTele(MatchSide.RED));
-        modes.add(new SpicyTele(MatchSide.BLUE));
+        modes.add(new SpicyTele(Globals.MatchSide.RED));
+        modes.add(new SpicyTele(Globals.MatchSide.BLUE));
 
-        modes.add(new AutoUno(MatchSide.RED));
-        modes.add(new AutoUno(MatchSide.BLUE));
+        modes.add(new AutoUno(Globals.MatchSide.RED));
+        modes.add(new AutoUno(Globals.MatchSide.BLUE));
 
         // TODO: Add more OpModes
         return modes;

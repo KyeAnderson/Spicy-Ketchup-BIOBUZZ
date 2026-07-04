@@ -38,7 +38,7 @@ public class ExampleCommandeerTest extends SpicyMode{
 
     @Override
     public String getOpModeName() {
-        return "";
+        return "Commandeer test %s";
     }
 
     @Override

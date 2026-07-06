@@ -8,8 +8,8 @@ import java.util.LinkedList;
 public class LinkedGroup extends CCommand {
     LinkedList<CCommand> cmds;
     public LinkedGroup(Object... args) {
-        this.cmds = new LinkedList<>();
         super(()->CState.ERROR, args);
+        this.cmds = new LinkedList<>();
     }
 
     public LinkedGroup add(CCommand command) {

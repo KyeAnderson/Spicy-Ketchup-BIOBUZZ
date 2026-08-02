@@ -22,6 +22,11 @@ public class Globals {
         BLUE,
     }
 
+    public enum ModeType {
+        AUTO,
+        TELE
+    }
+
 
     ///  ====== OPMODE REGISTRATION
     /// TODO: Add OpModes here
@@ -52,7 +57,7 @@ public class Globals {
         }
         return new OpModeMeta.Builder()
                 .setName(name)
-                .setFlavor(OpModeMeta.Flavor.TELEOP)
+                .setFlavor(mode.mode == ModeType.TELE ? OpModeMeta.Flavor.TELEOP : OpModeMeta.Flavor.AUTONOMOUS)
                 .setSource(OpModeMeta.Source.BLOCKLY)
                 .build();
     }

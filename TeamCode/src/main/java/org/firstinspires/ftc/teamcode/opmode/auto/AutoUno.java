@@ -12,7 +12,7 @@ public class AutoUno extends SpicyMode {
     AutoState state = AutoState.INIT;
 
     public AutoUno(Globals.MatchSide side) {
-        super(side);
+        super(side, Globals.ModeType.AUTO);
     }
 
     @Override

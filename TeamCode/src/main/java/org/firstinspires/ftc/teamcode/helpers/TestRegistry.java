@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
+import org.firstinspires.ftc.teamcode.mechanism.AndymarkTwoEncoder;
+import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.SpintakePrototype;
 import org.firstinspires.ftc.teamcode.mechanism.TestMechanism;
@@ -23,7 +26,7 @@ public class TestRegistry {
     static class GenericTest extends OpMode {
         public Class<? extends Mechanism> mechanismClass;
         Mechanism mechanism;
-        Follower follower;
+//        Follower follower;
         TelemetryManager telemetryM;
 
         public GenericTest(Class<? extends Mechanism> m) {
@@ -43,22 +46,22 @@ public class TestRegistry {
                 telemetryM.update(telemetry);
                 return;
             }
-            follower = Constants.createFollower(hardwareMap);
-            follower.setPose(new Pose(72, 72, 0));
+//            follower = Constants.createFollower(hardwareMap);
+//            follower.setPose(new Pose(72, 72, 0));
             telemetryM.update(telemetry);
-            Drawing.drawCurrent(follower);
+//            Drawing.drawCurrent(follower);
             telemetry.update();
         }
 
         @Override
         public void loop() {
             mechanism.loop();
-            mechanism.test(gamepad1, gamepad2, telemetryM, follower);
+            mechanism.test(gamepad1, gamepad2, telemetryM, null);
 
-            follower.update();
+//            follower.update();
             telemetry.addLine(mechanism.toString());
             telemetryM.update(telemetry);
-            Drawing.drawCurrent(follower);
+//            Drawing.drawCurrent(follower);
             telemetry.update();
         }
 
@@ -79,7 +82,10 @@ public class TestRegistry {
             GenericTest[] modes = {
                     // TODO: Add more testable mechanisms
                     new GenericTest(TestMechanism.class),
-                    new GenericTest(SpintakePrototype.class)
+                    new GenericTest(SpintakePrototype.class),
+                    new GenericTest(AndymarkEncoder.class),
+                    new GenericTest(AndymarkTwoEncoder.class),
+                    new GenericTest(EastSideEncoder.class)
             };
 
             for (GenericTest mode : modes) {

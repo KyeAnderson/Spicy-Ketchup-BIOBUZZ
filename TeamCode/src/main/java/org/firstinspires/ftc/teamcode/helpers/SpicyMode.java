@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public abstract class SpicyMode extends OpMode {
     public Globals.MatchSide side;
-    public SpicyMode(Globals.MatchSide side) {
+    public Globals.ModeType mode;
+    public SpicyMode(Globals.MatchSide side, Globals.ModeType mode) {
         this.side = side;
+        this.mode = mode;
     }
 
     public void init() {

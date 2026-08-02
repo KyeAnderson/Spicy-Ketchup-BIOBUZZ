@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class SpicyTele extends SpicyMode {
-    public SpicyTele(Globals.MatchSide side) {super(side);}
+    public SpicyTele(Globals.MatchSide side) {super(side, Globals.ModeType.TELE);}
     Follower f;
 
     @Override

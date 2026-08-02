@@ -11,15 +11,15 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class ExampleCommandeerTest extends SpicyMode{
     CQueue queue = new CQueue();
-    Follower f = Constants.createFollower(hardwareMap);
+    Follower f;
     public ExampleCommandeerTest(Globals.MatchSide side) {
-        super(side);
+        super(side, Globals.ModeType.TELE);
     }
 
     @Override
     public void init() {
         super.init();
-
+        f = Constants.createFollower(hardwareMap);
         queue.push(FollowPath.lineThroughPoses(f,
                 f::getPose, // From
                 ()->new Pose(0, 67,0), // To

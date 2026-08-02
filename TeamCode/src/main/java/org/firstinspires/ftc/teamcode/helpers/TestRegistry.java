@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
+import org.firstinspires.ftc.teamcode.mechanism.EncoderLinkedMotor;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.SpintakePrototype;
 import org.firstinspires.ftc.teamcode.mechanism.TestMechanism;
@@ -79,7 +80,8 @@ public class TestRegistry {
                     new GenericTest(TestMechanism.class),
                     new GenericTest(SpintakePrototype.class),
                     new GenericTest(AndymarkEncoder.class),
-                    new GenericTest(EastSideEncoder.class)
+                    new GenericTest(EastSideEncoder.class),
+                    new GenericTest(EncoderLinkedMotor.class)
             };
 
             for (GenericTest mode : modes) {

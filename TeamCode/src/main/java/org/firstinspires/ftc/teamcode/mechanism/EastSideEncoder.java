@@ -30,6 +30,8 @@ public class EastSideEncoder extends Mechanism {
         encoder = hm.get(AnalogInput.class, "ea");
         motor = hm.get(DcMotorEx.class, "turret");
         maxVoltage = encoder.getMaxVoltage();
+        resetMotor(true, motor);
+
 
         displayTelemetry("Max Voltage", encoder::getMaxVoltage);
         displayTelemetry("Cur Voltage", encoder::getVoltage);

@@ -28,6 +28,7 @@ public class AndymarkEncoder extends Mechanism {
 
         encoder = hm.get(AnalogInput.class, "am");
         motor = hm.get(DcMotorEx.class, "turret");
+        resetMotor(true, motor);
 
         displayTelemetry("Max Voltage", encoder::getMaxVoltage);
         displayTelemetry("Cur Voltage", encoder::getVoltage);

@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.helpers;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
@@ -12,13 +10,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
-import org.firstinspires.ftc.teamcode.mechanism.AndymarkTwoEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.SpintakePrototype;
 import org.firstinspires.ftc.teamcode.mechanism.TestMechanism;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.pedroPathing.Drawing;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -84,7 +79,6 @@ public class TestRegistry {
                     new GenericTest(TestMechanism.class),
                     new GenericTest(SpintakePrototype.class),
                     new GenericTest(AndymarkEncoder.class),
-                    new GenericTest(AndymarkTwoEncoder.class),
                     new GenericTest(EastSideEncoder.class)
             };
 

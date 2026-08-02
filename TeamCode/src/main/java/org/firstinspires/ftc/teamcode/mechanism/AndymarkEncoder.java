@@ -5,21 +5,14 @@ import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.commandeer.CCommand;
-import org.firstinspires.ftc.teamcode.commandeer.CQueue;
-import org.firstinspires.ftc.teamcode.commandeer.CState;
-import org.firstinspires.ftc.teamcode.commandeer.logical.LinkedGroup;
-import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class AndymarkEncoder extends Mechanism {
     AnalogInput encoder;
-    private final double maxVoltage;
     double offset = 0;
 
     DcMotorEx motor;
@@ -35,7 +28,6 @@ public class AndymarkEncoder extends Mechanism {
 
         encoder = hm.get(AnalogInput.class, "am");
         motor = hm.get(DcMotorEx.class, "turret");
-        maxVoltage = encoder.getMaxVoltage();
 
         displayTelemetry("Max Voltage", encoder::getMaxVoltage);
         displayTelemetry("Cur Voltage", encoder::getVoltage);
@@ -51,7 +43,7 @@ public class AndymarkEncoder extends Mechanism {
     double lastDeg;
 
     double voltageToDegrees() {
-        return (encoder.getVoltage() * Math.PI / maxVoltage * 360 + offset);
+        return (encoder.getVoltage() / 1.05 * 360 + offset);
     }
 
     double inc = 0;

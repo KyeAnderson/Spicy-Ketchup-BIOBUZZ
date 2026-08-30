@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.katchup.Drivetrain;
+import org.firstinspires.ftc.teamcode.katchup.SwervePod;
 import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EncoderLinkedMotor;
@@ -81,7 +83,8 @@ public class TestRegistry {
                     new GenericTest(SpintakePrototype.class),
                     new GenericTest(AndymarkEncoder.class),
                     new GenericTest(EastSideEncoder.class),
-                    new GenericTest(EncoderLinkedMotor.class)
+                    new GenericTest(EncoderLinkedMotor.class),
+                    new GenericTest(Drivetrain.class)
             };
 
             for (GenericTest mode : modes) {

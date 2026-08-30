@@ -32,6 +32,7 @@ public class EastSideEncoder extends Mechanism {
         maxVoltage = encoder.getMaxVoltage();
         resetMotor(true, motor);
 
+        lastDeg = voltageToDegrees();
 
         displayTelemetry("Max Voltage", encoder::getMaxVoltage);
         displayTelemetry("Cur Voltage", encoder::getVoltage);

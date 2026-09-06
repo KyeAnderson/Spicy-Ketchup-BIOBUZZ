@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.katchup;
 
 public class Pose {
-    double x;
-    double y;
-    double heading;
+    public double x, y, heading; // heading in radians
+
     public Pose(double x, double y, double heading) {
         this.x = x;
         this.y = y;
         this.heading = heading;
+    }
+
+    public double distance(Point other) {
+        return Math.hypot(other.x - this.x, other.y - this.y);
     }
 
     public double getX() {

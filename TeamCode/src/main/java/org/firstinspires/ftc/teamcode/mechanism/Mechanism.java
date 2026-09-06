@@ -27,6 +27,12 @@ public abstract class Mechanism {
         INSTANCE = this;
     }
 
+    public void displayTelemetry(String identifier, Mechanism linkedMechanism) {
+        for(Map.Entry<String, Supplier<String>> linkedEntry : linkedMechanism.selfTelemetry.entrySet()) {
+            selfTelemetry.put(identifier + " " + linkedEntry.getKey(), () -> String.valueOf(linkedEntry.getValue()));
+        }
+    }
+
     public void displayTelemetry(String identifier, String line) {
         selfTelemetry.put(identifier, () -> line);
     }

@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.katchup.Drivetrain;
-import org.firstinspires.ftc.teamcode.katchup.SwervePod;
 import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
 import org.firstinspires.ftc.teamcode.mechanism.EncoderLinkedMotor;

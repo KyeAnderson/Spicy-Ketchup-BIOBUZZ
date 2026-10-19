@@ -6,14 +6,14 @@ import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
-import org.firstinspires.ftc.teamcode.mechanism.Spintake;
+import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class SpicyTele extends SpicyMode {
     public SpicyTele(Globals.MatchSide side) {super(side, Globals.ModeType.TELE);}
     private Follower f;
-    private Spintake spintake;
+    private Intake intake;
     private Shooter shooter;
     private Transfer transfer;
 
@@ -32,7 +32,7 @@ public class SpicyTele extends SpicyMode {
         super.init();
 
         f = Constants.create(hardwareMap);
-        spintake = new Spintake(hardwareMap, telemetry);
+        intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
 
@@ -44,7 +44,7 @@ public class SpicyTele extends SpicyMode {
     @Override
     public void loop() {
         Globals.lastPose = f.pose();
-        telemetry.addLine(spintake.toString());
+        telemetry.addLine(intake.toString());
         telemetry.addLine(shooter.toString());
 
         double forward = -gamepad1.left_stick_y;
@@ -65,9 +65,9 @@ public class SpicyTele extends SpicyMode {
             transfer.setVelocity(Transfer.TransferVelocity.OFF);
         }
         if(gamepad1.right_bumper) {
-            spintake.setVelocity(Spintake.SpintakeVelocity.ON);
+            intake.setVelocity(Intake.IntakeVelocity.ON);
         } else {
-            spintake.setVelocity(Spintake.SpintakeVelocity.OFF);
+            intake.setVelocity(Intake.IntakeVelocity.OFF);
         }
 
         if(gamepad1.squareWasPressed()) {
@@ -77,7 +77,7 @@ public class SpicyTele extends SpicyMode {
             shooter.setCompression(HoodCompression.NECTAR);
         }
 
-        spintake.loop();
+        intake.loop();
         shooter.loop();
         f.update();
         telemetry.update();

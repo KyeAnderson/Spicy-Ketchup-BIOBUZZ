@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.mechanism.Spintake;
+import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 
@@ -73,7 +73,7 @@ public class TestRegistry {
         if (!Globals.hideTests) {
             GenericTest[] modes = {
                     // TODO: Add more testable mechanisms
-                    new GenericTest(Spintake.class),
+                    new GenericTest(Intake.class),
                     new GenericTest(Shooter.class)
             };
 

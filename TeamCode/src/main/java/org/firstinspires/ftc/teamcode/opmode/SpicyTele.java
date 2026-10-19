@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
+import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
@@ -58,7 +59,7 @@ public class SpicyTele extends SpicyMode {
         if(gamepad1.right_trigger > 0.7) {
             shooter.setVelocity(1870);
             if(shooter.flywheelAtTarget()) {
-                transfer.setVelocity(Transfer.TransferVelocity.ON);
+                transfer.setVelocity(TransferVelocity.ON);
             } else {
                 transfer.stop();
             }

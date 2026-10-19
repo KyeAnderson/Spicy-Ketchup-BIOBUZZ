@@ -34,7 +34,7 @@ public class Transfer extends Mechanism {
         transferVelo = velo;
     }
 
-ax    public void stop() {
+    public void stop() {
         setVelocity(TransferVelocity.OFF);
     }
 

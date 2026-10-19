@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 public class Shooter extends Mechanism {
     DcMotorEx flywheel;
     Servo angle;
-
     HoodCompression compress;
     float velocity;
 

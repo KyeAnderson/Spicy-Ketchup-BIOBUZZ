@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.opmode.SpicyTele;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
+import org.firstinspires.ftc.teamcode.opmode.auto.AutoUnoCB;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class Globals {
 
         modes.add(new AutoUno(Globals.MatchSide.RED));
         modes.add(new AutoUno(Globals.MatchSide.BLUE));
+
+        modes.add(new AutoUnoCB(Globals.MatchSide.RED));
 
         return modes;
     }

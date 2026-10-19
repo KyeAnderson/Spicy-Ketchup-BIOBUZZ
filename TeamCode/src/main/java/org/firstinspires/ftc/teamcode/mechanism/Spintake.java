@@ -2,18 +2,18 @@ package org.firstinspires.ftc.teamcode.mechanism;
 
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class SpintakePrototype extends Mechanism {
+public class Spintake extends Mechanism {
     DcMotorEx motor;
     public enum SpintakeVelocity {
         OFF(0),
-        ON(1500),
+        ON(5000),
         SLOW(500);
         final int power;
         SpintakeVelocity(int i) {
@@ -22,9 +22,11 @@ public class SpintakePrototype extends Mechanism {
     }
     SpintakeVelocity velocity;
 
-    public SpintakePrototype(HardwareMap hm, Telemetry tele) {
+    public Spintake(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
-        motor = hm.get(DcMotorEx.class, "spintake");
+        motor = hm.get(DcMotorEx.class, "spin");
+        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        displayTelemetry("Velo", motor::getVelocity);
         velocity = SpintakeVelocity.OFF;
         resetMotor(true, motor);
     }

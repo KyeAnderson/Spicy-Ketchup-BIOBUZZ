@@ -9,12 +9,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.mechanism.AndymarkEncoder;
-import org.firstinspires.ftc.teamcode.mechanism.EastSideEncoder;
-import org.firstinspires.ftc.teamcode.mechanism.EncoderLinkedMotor;
+import org.firstinspires.ftc.teamcode.mechanism.Spintake;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
-import org.firstinspires.ftc.teamcode.mechanism.SpintakePrototype;
-import org.firstinspires.ftc.teamcode.mechanism.TestMechanism;
+import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -55,9 +52,8 @@ public class TestRegistry {
             mechanism.test(gamepad1, gamepad2, telemetryM, null);
 
 //            follower.update();
-            telemetry.addLine(mechanism.toString());
+            telemetryM.addLine(mechanism.toString());
             telemetryM.update(telemetry);
-//            Drawing.drawCurrent(follower);
             telemetry.update();
         }
 
@@ -77,12 +73,8 @@ public class TestRegistry {
         if (!Globals.hideTests) {
             GenericTest[] modes = {
                     // TODO: Add more testable mechanisms
-                    new GenericTest(TestMechanism.class),
-                    new GenericTest(SpintakePrototype.class),
-                    new GenericTest(AndymarkEncoder.class),
-                    new GenericTest(EastSideEncoder.class),
-                    new GenericTest(EncoderLinkedMotor.class),
-                    new GenericTest(Drivetrain.class)
+                    new GenericTest(Spintake.class),
+                    new GenericTest(Shooter.class)
             };
 
             for (GenericTest mode : modes) {

@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.helpers;
 
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.commandeer.test.ExampleCommandeerTest;
 import org.firstinspires.ftc.teamcode.opmode.SpicyTele;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
 
@@ -32,7 +31,6 @@ public class Globals {
     /// TODO: Add OpModes here
     private static Set<SpicyMode> buildOpModes() {
         modes = new HashSet<>();
-        modes.add(new ExampleCommandeerTest(Globals.MatchSide.RED));
 
         modes.add(new SpicyTele(Globals.MatchSide.RED));
         modes.add(new SpicyTele(Globals.MatchSide.BLUE));

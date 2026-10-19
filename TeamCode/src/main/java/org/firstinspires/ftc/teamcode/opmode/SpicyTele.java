@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.pedropathing.follower.Follower;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
+import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Spintake;
@@ -70,10 +71,10 @@ public class SpicyTele extends SpicyMode {
         }
 
         if(gamepad1.squareWasPressed()) {
-            shooter.setCompression(Shooter.HoodCompression.POLLEN);
+            shooter.setCompression(HoodCompression.POLLEN);
         }
         if(gamepad1.circleWasPressed()) {
-            shooter.setCompression(Shooter.HoodCompression.NECTAR);
+            shooter.setCompression(HoodCompression.NECTAR);
         }
 
         spintake.loop();

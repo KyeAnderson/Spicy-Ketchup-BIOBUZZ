@@ -10,18 +10,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 
 public class Shooter extends Mechanism {
     DcMotorEx flywheel;
     Servo angle;
-    public enum HoodCompression  {
-        POLLEN(0.6),
-        NECTAR(0.45);
-        final double pos;
-        HoodCompression(double i) {
-            pos = i;
-        }
-    }
 
     HoodCompression compress;
     float velocity;
@@ -32,12 +25,12 @@ public class Shooter extends Mechanism {
         angle = hm.get(Servo.class, "ang");
         velocity = 0;
         compress = HoodCompression.POLLEN;
+        initializeMotors(flywheel);
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
         displayTelemetry("Hood Compression", ()->compress);
         displayTelemetry("Hood Angle", angle::getPosition);
         displayTelemetry("Flywheel velocity", flywheel::getVelocity);
-        initializeMotors(flywheel);
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setCompression(HoodCompression comp) {
@@ -45,9 +38,9 @@ public class Shooter extends Mechanism {
         compress = comp;
     }
 
-    public void setVelocity(float velo) {
-        if(velocity == velo) return;
-        velocity = velo;
+    public void setVelocity(float v) {
+        if(velocity == v) return;
+        velocity = v;
     }
 
     public boolean flywheelAtTarget() {
@@ -57,7 +50,7 @@ public class Shooter extends Mechanism {
     @Override
     public void loop() {
         flywheel.setVelocity(velocity);
-        angle.setPosition(compress.pos);
+        angle.setPosition(compress.getPosition());
     }
 
     @Override

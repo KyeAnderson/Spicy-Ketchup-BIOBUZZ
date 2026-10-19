@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Spintake;
+import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 public class SpicyTele extends SpicyMode {
@@ -13,6 +14,7 @@ public class SpicyTele extends SpicyMode {
     private Follower f;
     private Spintake spintake;
     private Shooter shooter;
+    private Transfer transfer;
 
     @Override
     public void onRedInit() {
@@ -31,6 +33,7 @@ public class SpicyTele extends SpicyMode {
         f = Constants.create(hardwareMap);
         spintake = new Spintake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
+        transfer = new Transfer(hardwareMap, telemetry);
 
         telemetry.addData("We're on", side.name());
         telemetry.update();
@@ -52,13 +55,13 @@ public class SpicyTele extends SpicyMode {
         if(gamepad1.right_trigger > 0.7) {
             shooter.setVelocity(1870);
             if(shooter.flywheelAtTarget()) {
-                shooter.setTransfer(Shooter.TransferVelocity.ON);
+                transfer.setVelocity(Transfer.TransferVelocity.ON);
             } else {
-                shooter.setTransfer(Shooter.TransferVelocity.OFF);
+                transfer.setVelocity(Transfer.TransferVelocity.OFF);
             }
         } else {
             shooter.setVelocity(0);
-            shooter.setTransfer(Shooter.TransferVelocity.OFF);
+            transfer.setVelocity(Transfer.TransferVelocity.OFF);
         }
         if(gamepad1.right_bumper) {
             spintake.setVelocity(Spintake.SpintakeVelocity.ON);

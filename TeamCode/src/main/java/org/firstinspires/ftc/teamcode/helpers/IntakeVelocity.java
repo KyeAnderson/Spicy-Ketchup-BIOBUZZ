@@ -8,4 +8,8 @@ public enum IntakeVelocity {
     IntakeVelocity(int i) {
         power = i;
     }
+
+    public int getPower() {
+        return power;
+    }
 }

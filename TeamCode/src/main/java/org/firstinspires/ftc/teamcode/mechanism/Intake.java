@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.mechanism;
 
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 
 public class Intake extends Mechanism {
-    DcMotorEx motor;
+    final static double velocityErrorMargin = 40; // ticks/sec
+    static DcMotorEx motor;
     IntakeVelocity velocity;
 
     public Intake(HardwareMap hm, Telemetry tele) {
@@ -28,9 +30,20 @@ public class Intake extends Mechanism {
         velocity = velo;
     }
 
+    public static Command spinAt(IntakeVelocity target) {
+        return Command.build()
+                .setStart(() -> motor.setVelocity(target.getPower()))
+                .setDone(() -> Math.abs(target.getPower() - motor.getVelocity()) < velocityErrorMargin)
+                .requiring(motor);
+    }
+
+    public void stop() {
+        setVelocity(IntakeVelocity.OFF);
+    }
+
     @Override
     public void loop() {
-        motor.setVelocity(velocity.power);
+        motor.setVelocity(velocity.getPower());
     }
 
     @Override

@@ -34,6 +34,10 @@ public class Transfer extends Mechanism {
         transferVelo = velo;
     }
 
+ax    public void stop() {
+        setVelocity(TransferVelocity.OFF);
+    }
+
     @Override
     public void loop() {
         transfer.setVelocity(transferVelo.power);

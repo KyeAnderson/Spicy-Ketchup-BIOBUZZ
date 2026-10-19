@@ -47,6 +47,7 @@ public class SpicyTele extends SpicyMode {
         Globals.lastPose = f.pose();
         telemetry.addLine(intake.toString());
         telemetry.addLine(shooter.toString());
+        telemetry.addLine(transfer.toString());
 
         double forward = -gamepad1.left_stick_y;
         double lateral = gamepad1.left_stick_x;
@@ -59,16 +60,16 @@ public class SpicyTele extends SpicyMode {
             if(shooter.flywheelAtTarget()) {
                 transfer.setVelocity(Transfer.TransferVelocity.ON);
             } else {
-                transfer.setVelocity(Transfer.TransferVelocity.OFF);
+                transfer.stop();
             }
         } else {
-            shooter.setVelocity(0);
-            transfer.setVelocity(Transfer.TransferVelocity.OFF);
+            shooter.stop();
+            transfer.stop();
         }
         if(gamepad1.right_bumper) {
             intake.setVelocity(IntakeVelocity.ON);
         } else {
-            intake.setVelocity(IntakeVelocity.OFF);
+            intake.stop();
         }
 
         if(gamepad1.squareWasPressed()) {

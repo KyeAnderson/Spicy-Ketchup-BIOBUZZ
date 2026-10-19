@@ -47,6 +47,10 @@ public class Shooter extends Mechanism {
         return Math.abs(flywheel.getVelocity() - velocity) < 50;
     }
 
+    public void stop() {
+        setVelocity(0);
+    }
+
     @Override
     public void loop() {
         flywheel.setVelocity(velocity);

@@ -22,15 +22,6 @@ public class Shooter extends Mechanism {
             pos = i;
         }
     }
-    public enum ShooterVelocity {
-        OFF(0),
-        ON(1500),
-        SLOW(500);
-        final int power;
-        ShooterVelocity(int i) {
-            power = i;
-        }
-    }
 
     HoodCompression compress;
     float velocity;
@@ -39,7 +30,7 @@ public class Shooter extends Mechanism {
         super(hm, tele);
         flywheel = hm.get(DcMotorEx.class, "fly");
         angle = hm.get(Servo.class, "ang");
-        velocity = ShooterVelocity.OFF.power;
+        velocity = 0;
         compress = HoodCompression.POLLEN;
         displayTelemetry("Hood Compression", ()->compress);
         displayTelemetry("Hood Angle", angle::getPosition);
@@ -47,17 +38,11 @@ public class Shooter extends Mechanism {
         initializeMotors(flywheel);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        setVelocity(ShooterVelocity.OFF);
     }
 
     public void setCompression(HoodCompression comp) {
         if(compress == comp) return;
         compress = comp;
-    }
-
-    public void setVelocity(ShooterVelocity velo) {
-        if(velocity == velo.power) return;
-        velocity = velo.power;
     }
 
     public void setVelocity(float velo) {

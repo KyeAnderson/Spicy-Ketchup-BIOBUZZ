@@ -8,18 +8,10 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 
 public class Intake extends Mechanism {
     DcMotorEx motor;
-    public enum IntakeVelocity {
-        OFF(0),
-        ON(5000),
-        SLOW(500);
-        final int power;
-        IntakeVelocity(int i) {
-            power = i;
-        }
-    }
     IntakeVelocity velocity;
 
     public Intake(HardwareMap hm, Telemetry tele) {

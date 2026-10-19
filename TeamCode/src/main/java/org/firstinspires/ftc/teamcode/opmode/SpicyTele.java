@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
+import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
@@ -65,9 +66,9 @@ public class SpicyTele extends SpicyMode {
             transfer.setVelocity(Transfer.TransferVelocity.OFF);
         }
         if(gamepad1.right_bumper) {
-            intake.setVelocity(Intake.IntakeVelocity.ON);
+            intake.setVelocity(IntakeVelocity.ON);
         } else {
-            intake.setVelocity(Intake.IntakeVelocity.OFF);
+            intake.setVelocity(IntakeVelocity.OFF);
         }
 
         if(gamepad1.squareWasPressed()) {

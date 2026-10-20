@@ -45,16 +45,17 @@ public class SpicyTele extends SpicyMode {
 
     @Override
     public void loop() {
+        /// DRIVE
+
         Globals.lastPose = f.pose();
-        telemetry.addLine(intake.toString());
-        telemetry.addLine(shooter.toString());
-        telemetry.addLine(transfer.toString());
 
         double forward = -gamepad1.left_stick_y;
         double lateral = gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
 
         f.manual(forward,lateral,turn);
+
+        /// CONTROLS
 
         if(gamepad1.right_trigger > 0.7) {
             shooter.setVelocity(1870);
@@ -79,6 +80,12 @@ public class SpicyTele extends SpicyMode {
         if(gamepad1.circleWasPressed()) {
             shooter.setCompression(HoodCompression.NECTAR);
         }
+
+        // TELEMETRY / LOOP
+
+        telemetry.addLine(intake.toString());
+        telemetry.addLine(shooter.toString());
+        telemetry.addLine(transfer.toString());
 
         intake.loop();
         shooter.loop();

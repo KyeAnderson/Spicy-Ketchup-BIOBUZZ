@@ -83,6 +83,10 @@ public class SpicyTele extends SpicyMode {
 
         // TELEMETRY / LOOP
 
+        telemetry.addLine("Gamepad1 Right Trigger: Shooter (set velocity to 1870 tps)");
+        telemetry.addLine("Gamepad1 Right Bumper: Intake (hold)");
+        telemetry.addLine("Gamepad1 Square: Set Hood Compression for Pollen");
+        telemetry.addLine("Gamepad1 Circle: Set Hood Compression for Nectar");
         telemetry.addLine(intake.toString());
         telemetry.addLine(shooter.toString());
         telemetry.addLine(transfer.toString());

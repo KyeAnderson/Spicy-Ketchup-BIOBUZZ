@@ -66,8 +66,7 @@ public class Shooter extends Mechanism {
         }
 
 
-        telemetryM.addLine("Press square to turn off");
-        telemetryM.addLine("Press circle to turn on");
-        telemetryM.addLine("triangle to set 0.5");
+        telemetryM.addLine("Press square to set HoodCompression.POLLEN");
+        telemetryM.addLine("Press circle to set HoodCompression.NECTAR");
     }
 }

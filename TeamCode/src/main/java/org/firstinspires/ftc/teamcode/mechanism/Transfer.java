@@ -16,9 +16,9 @@ public class Transfer extends Mechanism {
     public Transfer(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
         transfer = hm.get(DcMotorEx.class, "tf");
+        transferVelo = TransferVelocity.OFF;
         displayTelemetry("Current Velocity", transfer::getVelocity);
         displayTelemetry("Setpoint Velocity", transferVelo::getPower);
-        transferVelo = TransferVelocity.OFF;
         transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         initializeMotors(transfer);
     }

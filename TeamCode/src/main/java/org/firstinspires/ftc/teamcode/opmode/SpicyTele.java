@@ -58,7 +58,7 @@ public class SpicyTele extends SpicyMode {
         /// CONTROLS
 
         if(gamepad1.right_trigger > 0.7) {
-            shooter.setVelocity(1870);
+            shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
             if(shooter.flywheelAtTarget()) {
                 transfer.setVelocity(TransferVelocity.ON);
             } else {

@@ -1,79 +1,156 @@
 package org.firstinspires.ftc.teamcode.opmode.auto;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
+import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
+import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
+import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
+import org.firstinspires.ftc.teamcode.mechanism.Intake;
+import org.firstinspires.ftc.teamcode.mechanism.Shooter;
+import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
+import java.util.concurrent.TimeUnit;
+
 public class AutoUno extends SpicyMode {
-    Follower f;
-    enum AutoState {
-        INIT,
-        MOVE,
-        END
-    }
-    AutoState state;
-    Path toMiddle;
-    PoseFactory p;
     public AutoUno(Globals.MatchSide side) {
         super(side, Globals.ModeType.AUTO);
     }
-    Pose start;
-    Pose end;
-    @Override
-    public void onRedInit() {
-        telemetry.addLine("This will only show up on RED.");
-        f.setPose(new Pose(56, 11, Math.toRadians(90)));
-        start= p.of(56,11,90);
-        end = p.of(71,79.5,180);
 
+    enum AutoState {
+        BEGIN,
+        MOVE_TO_SCORE,
+        BEGIN_SCORING,
+        MOVE_TO_SPIKE_MARK,
+        PICKUP_FROM_SPIKE_MARK,
+        END
     }
-    Path path1() {
-        return Paths.line(start, end).linear(start, end);
+    AutoState state;
+
+    PoseFactory p;
+    Follower f;
+    Shooter s;
+    Transfer t;
+    Intake i;
+
+    Pose start;
+    Pose spikeMark;
+    Pose spikeMarkPickup;
+    Path startToSpikeMark() {
+        return Paths.line(start, spikeMark).linear(start, spikeMark);
     }
-    Path path2() {
-        return Paths.line(end, start).linear(end, start);
+    Path pickupFromSpikeMark() {
+        return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
+    }
+    Path moveToScore() {
+        return Paths.line(f.pose(), start).linear(f.pose(), start);
     }
 
     @Override
     public void onBlueInit() {
-        telemetry.speak("Bro do not select blue autonomous");
-        telemetry.addLine("This will only show up on BLUE.");
+        p = p.mirrorAroundPoint(70.75,70.75);
     }
+    boolean flywheelReadyToShoot = false;
+    Timer scoreTimer = new Timer();
+
+    TelemetryManager telemetryM;
 
     @Override
     public void init() {
-        state = AutoState.INIT;
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+        state = AutoState.BEGIN;
         p = PoseFactory.degrees();
-        f = Constants.create(hardwareMap);
         super.init();
+        f = Constants.create(hardwareMap);
+        s = new Shooter(hardwareMap, telemetry);
+        t = new Transfer(hardwareMap, telemetry);
+        i = new Intake(hardwareMap, telemetry);
+        flywheelReadyToShoot = false;
+        start = p.of(56,9,0);
+        f.setPose(start);
         f.update();
+
+        spikeMark = p.of(13, 12, 245);
+        spikeMarkPickup = p.of(9, 9, 270);
+
         telemetry.addData("We're on", side.name());
-        telemetry.update();
+        telemetryM.update(telemetry);
+    }
+
+    public void fsmRoutine() {
+        switch(state) {
+            case BEGIN:
+                setState(AutoState.MOVE_TO_SCORE);
+                break;
+            case MOVE_TO_SCORE:
+                s.setCompression(HoodCompression.POLLEN);
+                if(!f.isBusy()) {
+                    setState(AutoState.BEGIN_SCORING);
+                }
+                break;
+            case BEGIN_SCORING:
+                s.setVelocity(Shooter.TESTING_SHOOTER_VELO);
+                if(s.flywheelAtTarget()) {
+                    if(!flywheelReadyToShoot) {
+                        flywheelReadyToShoot = true;
+                        scoreTimer.reset();
+                    }
+                    t.setVelocity(TransferVelocity.ON);
+                } else {
+                    t.stop();
+                }
+                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= s.getCompress().getTime() * 4) {
+                    // If we've scored (3 pollen, estimated score time)
+                    t.stop();
+                    s.setVelocity(0);
+                    f.follow(startToSpikeMark());
+                    setState(AutoState.MOVE_TO_SPIKE_MARK);
+                }
+                break;
+            case MOVE_TO_SPIKE_MARK:
+                i.setVelocity(IntakeVelocity.SLOW);
+                if(!f.isBusy()) {
+                    f.follow(pickupFromSpikeMark());
+                    setState(AutoState.PICKUP_FROM_SPIKE_MARK);
+                }
+                break;
+            case PICKUP_FROM_SPIKE_MARK:
+                i.setVelocity(IntakeVelocity.ON);
+                if(!f.isBusy()) {
+                    f.follow(moveToScore());
+                    setState(AutoState.MOVE_TO_SCORE);
+                }
+                break;
+            case END:
+                break;
+        }
     }
 
     @Override
     public void loop() {
-        switch(state) {
-            case INIT:
-                f.follow(path1());
-                setState(AutoState.MOVE);
-                break;
-            case MOVE:
-                if(!f.isBusy()) {
-                    setState(AutoState.END);
-                }
-                break;
-            case END:
-                f.follow(path2());
-                break;
-        }
+        telemetryM.addLine(f.toString());
+        telemetryM.addLine(i.toString());
+        telemetryM.addLine(s.toString());
+        telemetryM.addLine(t.toString());
+        fsmRoutine();
+
+
         f.update();
+        i.loop();
+        s.loop();
+        t.loop();
+
+        telemetryM.update(telemetry);
+        telemetry.update();
     }
 
     void setState(AutoState state) {

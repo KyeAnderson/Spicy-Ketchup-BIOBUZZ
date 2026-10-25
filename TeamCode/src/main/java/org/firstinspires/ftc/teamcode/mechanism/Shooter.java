@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 
 public class Shooter extends Mechanism {
+    public static final int TESTING_SHOOTER_VELO = 1870;
     DcMotorEx flywheel;
     Servo angle;
     HoodCompression compress;
@@ -54,6 +55,10 @@ public class Shooter extends Mechanism {
     public void loop() {
         flywheel.setVelocity(velocity);
         angle.setPosition(compress.getPosition());
+    }
+
+    public HoodCompression getCompress() {
+        return compress;
     }
 
     @Override

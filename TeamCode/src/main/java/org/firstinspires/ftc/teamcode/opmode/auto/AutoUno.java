@@ -76,12 +76,12 @@ public class AutoUno extends SpicyMode {
         t = new Transfer(hardwareMap, telemetry);
         i = new Intake(hardwareMap, telemetry);
         flywheelReadyToShoot = false;
-        start = p.of(56,9,0);
+        start = p.of(58,10,0);
         f.setPose(start);
         f.update();
 
-        spikeMark = p.of(13, 12, 270);
-        spikeMarkPickup = p.of(9, 9, 90);
+        spikeMark = p.of(20, 40, 270);
+        spikeMarkPickup = p.of(12.7, 11, 270);
 
         telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);

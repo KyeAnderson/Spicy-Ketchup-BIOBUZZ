@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
+import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -74,7 +75,8 @@ public class TestRegistry {
             GenericTest[] modes = {
                     // TODO: Add more testable mechanisms
                     new GenericTest(Intake.class),
-                    new GenericTest(Shooter.class)
+                    new GenericTest(Shooter.class),
+                    new GenericTest(Transfer.class)
             };
 
             for (GenericTest mode : modes) {

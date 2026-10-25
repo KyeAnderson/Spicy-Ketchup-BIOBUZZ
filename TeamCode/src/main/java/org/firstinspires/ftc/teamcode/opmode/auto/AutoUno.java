@@ -46,18 +46,19 @@ public class AutoUno extends SpicyMode {
     Pose spikeMark;
     Pose spikeMarkPickup;
     Path startToSpikeMark() {
-        return Paths.line(start, spikeMark).linear(start, spikeMark);
+        return Paths.curve(start, p.of(13, 21, 270), spikeMark).linear(start, spikeMark);
     }
     Path pickupFromSpikeMark() {
         return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
     }
     Path moveToScore() {
-        return Paths.line(f.pose(), start).linear(f.pose(), start);
+        return Paths.line(spikeMarkPickup, start).linear(spikeMarkPickup, start);
     }
 
     @Override
     public void onBlueInit() {
         p = p.mirrorAroundPoint(70.75,70.75);
+        telemetry.addLine("blue");
     }
     boolean flywheelReadyToShoot = false;
     Timer scoreTimer = new Timer();
@@ -79,8 +80,8 @@ public class AutoUno extends SpicyMode {
         f.setPose(start);
         f.update();
 
-        spikeMark = p.of(13, 12, 245);
-        spikeMarkPickup = p.of(9, 9, 270);
+        spikeMark = p.of(13, 12, 270);
+        spikeMarkPickup = p.of(9, 9, 90);
 
         telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
@@ -112,6 +113,7 @@ public class AutoUno extends SpicyMode {
                     // If we've scored (3 pollen, estimated score time)
                     t.stop();
                     s.setVelocity(0);
+                    flywheelReadyToShoot = false;
                     f.follow(startToSpikeMark());
                     setState(AutoState.MOVE_TO_SPIKE_MARK);
                 }
@@ -127,6 +129,7 @@ public class AutoUno extends SpicyMode {
                 i.setVelocity(IntakeVelocity.ON);
                 if(!f.isBusy()) {
                     f.follow(moveToScore());
+                    i.setVelocity(IntakeVelocity.OFF);
                     setState(AutoState.MOVE_TO_SCORE);
                 }
                 break;
@@ -137,6 +140,7 @@ public class AutoUno extends SpicyMode {
 
     @Override
     public void loop() {
+        telemetryM.addLine(state.name());
         telemetryM.addLine(f.toString());
         telemetryM.addLine(i.toString());
         telemetryM.addLine(s.toString());

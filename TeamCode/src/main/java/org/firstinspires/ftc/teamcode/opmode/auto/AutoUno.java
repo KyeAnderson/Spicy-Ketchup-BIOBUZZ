@@ -32,7 +32,8 @@ public class AutoUno extends SpicyMode {
         BEGIN_SCORING,
         MOVE_TO_SPIKE_MARK,
         PICKUP_FROM_SPIKE_MARK,
-        END
+        MOVE_TO_END,
+        EXIT_OPMODE
     }
     AutoState state;
 
@@ -45,23 +46,43 @@ public class AutoUno extends SpicyMode {
     Pose start;
     Pose spikeMark;
     Pose spikeMarkPickup;
+    Pose scorePostPickup;
+    Pose loadingZone;
     Path startToSpikeMark() {
-        return Paths.curve(start, p.of(13, 21, 270), spikeMark).linear(start, spikeMark);
+        return Paths
+                .curve(start,
+                        p.of(13, 21, 270),
+                        spikeMark)
+                .linear(start, spikeMark);
     }
     Path pickupFromSpikeMark() {
-        return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
+        return Paths
+                .line(spikeMark, spikeMarkPickup)
+                .linear(spikeMark, spikeMarkPickup)
+                .with(
+                    Constants.foresightConfig.maxPathSpeed.at(0.5) // slow it down to pickup
+                );
     }
-    Path moveToScore() {
-        return Paths.line(spikeMarkPickup, start).linear(spikeMarkPickup, start);
+    Path spikeMarkToScore() {
+        return Paths
+                .line(spikeMarkPickup, scorePostPickup)
+                .linear(spikeMarkPickup, scorePostPickup);
     }
-
+    Path finalScoreToLoadingZone() {
+        return Paths
+                .line(scorePostPickup, loadingZone)
+                .linear(scorePostPickup, loadingZone);
+    }
     @Override
     public void onBlueInit() {
         p = p.mirrorAroundPoint(70.75,70.75);
         telemetry.addLine("blue");
     }
+    boolean pickedUpSpikeMark = false;
     boolean flywheelReadyToShoot = false;
+    boolean DEBUG_MODE = true;
     Timer scoreTimer = new Timer();
+    Timer stateTimer = new Timer();
 
     TelemetryManager telemetryM;
 
@@ -76,12 +97,18 @@ public class AutoUno extends SpicyMode {
         t = new Transfer(hardwareMap, telemetry);
         i = new Intake(hardwareMap, telemetry);
         flywheelReadyToShoot = false;
+        pickedUpSpikeMark = false;
         start = p.of(58,10,0);
         f.setPose(start);
         f.update();
 
+        Globals.lastPose = f.pose();
+
         spikeMark = p.of(20, 40, 270);
         spikeMarkPickup = p.of(12.7, 11, 270);
+
+        scorePostPickup = p.of(58, 125, 180);
+        loadingZone = p.of(12, 96, 270);
 
         telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
@@ -94,12 +121,12 @@ public class AutoUno extends SpicyMode {
                 break;
             case MOVE_TO_SCORE:
                 s.setCompression(HoodCompression.POLLEN);
+                s.setVelocity(Shooter.TESTING_SHOOTER_VELO);
                 if(!f.isBusy()) {
                     setState(AutoState.BEGIN_SCORING);
                 }
                 break;
             case BEGIN_SCORING:
-                s.setVelocity(Shooter.TESTING_SHOOTER_VELO);
                 if(s.flywheelAtTarget()) {
                     if(!flywheelReadyToShoot) {
                         flywheelReadyToShoot = true;
@@ -112,10 +139,15 @@ public class AutoUno extends SpicyMode {
                 if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= s.getCompress().getTime() * 4) {
                     // If we've scored (3 pollen, estimated score time)
                     t.stop();
-                    s.setVelocity(0);
+                    s.stop();
                     flywheelReadyToShoot = false;
-                    f.follow(startToSpikeMark());
-                    setState(AutoState.MOVE_TO_SPIKE_MARK);
+                    if(pickedUpSpikeMark) {
+                        f.follow(finalScoreToLoadingZone());
+                        setState(AutoState.MOVE_TO_END);
+                    } else {
+                        f.follow(startToSpikeMark());
+                        setState(AutoState.MOVE_TO_SPIKE_MARK);
+                    }
                 }
                 break;
             case MOVE_TO_SPIKE_MARK:
@@ -128,37 +160,58 @@ public class AutoUno extends SpicyMode {
             case PICKUP_FROM_SPIKE_MARK:
                 i.setVelocity(IntakeVelocity.ON);
                 if(!f.isBusy()) {
-                    f.follow(moveToScore());
-                    i.setVelocity(IntakeVelocity.OFF);
+                    f.follow(spikeMarkToScore());
+                    i.stop();
+                    pickedUpSpikeMark = true;
                     setState(AutoState.MOVE_TO_SCORE);
                 }
                 break;
-            case END:
+            case MOVE_TO_END:
+                // Final cleanup
+                i.stop();
+                s.stop();
+                t.stop();
+                if(!f.isBusy()) {
+                    setState(AutoState.EXIT_OPMODE);
+                }
+                break;
+            case EXIT_OPMODE:
+                // Final final cleanup
+                requestOpModeStop();
                 break;
         }
     }
 
-    @Override
-    public void loop() {
-        telemetryM.addLine(state.name());
-        telemetryM.addLine(f.toString());
+    void debugRoutine() {
+        telemetryM.addData("State", state.name());
+        telemetryM.addData("Time in current state", stateTimer.get(TimeUnit.MILLISECONDS));
+        telemetryM.addData("Score Timer", scoreTimer.get(TimeUnit.MILLISECONDS));
+        telemetryM.addData("Pose", f.pose());
         telemetryM.addLine(i.toString());
         telemetryM.addLine(s.toString());
         telemetryM.addLine(t.toString());
-        fsmRoutine();
 
+        telemetryM.update(telemetry);
+        telemetry.update();
+    }
+
+    @Override
+    public void loop() {
+        Globals.lastPose = f.pose();
+        fsmRoutine();
 
         f.update();
         i.loop();
         s.loop();
         t.loop();
 
-        telemetryM.update(telemetry);
-        telemetry.update();
+        if(DEBUG_MODE) debugRoutine();
+        if(gamepad1.xWasPressed()) DEBUG_MODE = !DEBUG_MODE;
     }
 
     void setState(AutoState state) {
         this.state = state;
+        stateTimer.reset();
     }
 
     @Override

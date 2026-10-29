@@ -77,6 +77,7 @@ public class SpicyTele extends SpicyMode {
             if(!triggerPressed) transfer.stop();
         }
 
+
         if(gamepad1.squareWasPressed()) {
             shooter.setCompression(HoodCompression.POLLEN);
         }

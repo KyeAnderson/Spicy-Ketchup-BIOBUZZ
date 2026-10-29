@@ -10,14 +10,17 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.utils.Timer;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
+import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
+import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
 import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
+import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import java.util.ArrayList;
-import java.util.function.BooleanSupplier;
+import java.util.concurrent.TimeUnit;
 
 public class AutoBuilder extends SpicyMode {
     public AutoBuilder(Globals.MatchSide side) {
@@ -25,7 +28,7 @@ public class AutoBuilder extends SpicyMode {
     }
 
     enum AutoState {
-        _NEXT_CMD,
+        BEGIN,
         RIGHT_SHOOT,
         LEFT_SHOOT,
         DOWN_FLOWER,
@@ -39,8 +42,8 @@ public class AutoBuilder extends SpicyMode {
         WAIT_FOR_PATH
     }
 
-    ArrayList<AutoState> commands;
-    int currCommandIndex = 0;
+    ArrayList<AutoState> cPath;
+    int cPathDex;
 
     AutoState state;
 
@@ -51,14 +54,14 @@ public class AutoBuilder extends SpicyMode {
     Intake i;
 
     Pose start;
-    Pose garden;
+    Pose spikeMark;
     Pose spikeMarkPickup;
     Pose testPose;
     Path startToSpikeMark() {
-        return Paths.line(start, garden).linear(start, garden);
+        return Paths.line(start, spikeMark).linear(start, spikeMark);
     }
     Path pickupFromSpikeMark() {
-        return Paths.curve(garden, spikeMarkPickup);
+        return Paths.curve(spikeMark, spikeMarkPickup);
       //  return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
     }
     Path moveToScore() {
@@ -77,7 +80,7 @@ public class AutoBuilder extends SpicyMode {
     @Override
     public void init() {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-        state = AutoState._NEXT_CMD;
+        state = AutoState.BEGIN;
         p = PoseFactory.degrees();
         super.init();
         f = Constants.create(hardwareMap);
@@ -89,94 +92,77 @@ public class AutoBuilder extends SpicyMode {
         f.setPose(start);
         f.update();
 
-        garden = p.of(13, 12, 245);
+        spikeMark = p.of(13, 12, 245);
         spikeMarkPickup = p.of(9, 9, 270);
         testPose = p.of(10, 10, 0);
 
-        commands = new ArrayList<>();
-        currCommandIndex = 0;
 
-        // here I removed the state .BEGIN because we can just handle begin in start()
+        cPath = new ArrayList<>();
+        cPath.add(AutoState.BEGIN);
+        cPathDex=0;
+
         telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
     }
-    void routeBuilder(BooleanSupplier b, AutoState s) {
-        // This does literally the same thing as the if statements, but i like the look of methods
-        if(b.getAsBoolean()) {
-            commands.add(s);
-        }
-    }
-
     @Override
     public void init_loop(){
-        boolean hasEnd = !commands.isEmpty() && commands.get(commands.size() - 1) == AutoState.END;
-        if (!hasEnd) {
-            routeBuilder(gamepad1::circleWasPressed, AutoState.RIGHT_SHOOT);
-            routeBuilder(gamepad1::squareWasPressed, AutoState.LEFT_SHOOT);
-            routeBuilder(gamepad1::dpadDownWasPressed, AutoState.DOWN_FLOWER);
-            routeBuilder(gamepad1::dpadLeftWasPressed, AutoState.LEFT_FLOWER);
-            routeBuilder(gamepad1::dpadRightWasPressed, AutoState.GARDEN);
-            routeBuilder(gamepad1::rightBumperWasPressed, AutoState.RIGHT_PARK);
-            routeBuilder(gamepad1::leftBumperWasPressed, AutoState.LEFT_PARK);
-            routeBuilder(gamepad1::xWasPressed, AutoState.WAIT_ONE);
-            routeBuilder(gamepad1::touchpadWasPressed, AutoState.TEST_POSE);
-
+        if (!cPath.get(cPath.size()-1).equals(AutoState.END)){
+            if (gamepad1.circleWasPressed())
+                cPath.add(AutoState.RIGHT_SHOOT);
+            if (gamepad1.squareWasPressed())
+                cPath.add(AutoState.LEFT_SHOOT);
+            if (gamepad1.dpadDownWasPressed())
+                cPath.add(AutoState.DOWN_FLOWER);
+            if (gamepad1.dpadLeftWasPressed())
+                cPath.add(AutoState.LEFT_FLOWER);
+            if (gamepad1.dpadRightWasPressed())
+                cPath.add(AutoState.GARDEN);
+            if (gamepad1.rightBumperWasPressed())   // Park on the right side of the zone
+                cPath.add(AutoState.RIGHT_PARK);
+            if (gamepad1.leftBumperWasPressed())    // Park on the left side of the zone
+                cPath.add(AutoState.LEFT_PARK);
+            if (gamepad1.xWasPressed())             // Wait 1 second
+                cPath.add(AutoState.WAIT_ONE);
             if (gamepad1.dpad_right && gamepad1.options)   // Reset Path
-                commands.clear();
-
-            if (gamepad1.shareWasPressed() && !commands.isEmpty())    // Remove last command
-                commands.remove(commands.size()-1);
-
+                cPath.clear();
+            if (gamepad1.touchpadWasPressed())
+                cPath.add(AutoState.TEST_POSE);
+            if (gamepad1.shareWasPressed())    // Remove last command
+                cPath.remove(cPath.size()-1);
             if (gamepad1.left_trigger > 0.5 && gamepad1.right_trigger > 0.5 && gamepad1.triangle)
-                commands.add(AutoState.END);
-            
-            telemetry.addLine("Auto building, waiting for END");
-            telemetry.addData("Auto", commands);
-        } else {
-            telemetry.addLine("Auto has an END command, press G1 SHARE to undo.");
-            telemetry.addData("Auto", commands);
+                cPath.add(AutoState.END);
 
-            if (gamepad1.shareWasPressed() && !commands.isEmpty()) commands.remove(commands.size()-1);
+            telemetry.addData("Auto", cPath);
         }
-
-        telemetry.update();
-    }
-
-    @Override
-    public void start() {
-        boolean isCmdsEmpty = commands.isEmpty();
-        boolean commandIndexExists = currCommandIndex < commands.size();
-        if(isCmdsEmpty || !commandIndexExists) {
-            throw new RuntimeException("An error occurred trying to start your built auto: " + (isCmdsEmpty ? "Command list is empty | " : "") + (!commandIndexExists ? "Command index doesn't exist" : ""));
-        }
-        setState(commands.get(currCommandIndex)); // CCI is 0, so we just do the first action.
     }
 
     public void fsmRoutine() {
+ //       if (cPathDex == cPath.size()) // Insurance in case we forget to add END
+//            setState(AutoState.END);
         switch(state) {
-            case _NEXT_CMD:
-                int index = ++currCommandIndex;
-                if(index == commands.size()) {
-                    setState(AutoState.END);
-                } else {
-                    setState(commands.get(index));
-                }
+            case BEGIN:
+                cPathDex++;
+                setState(cPath.get(cPathDex));
                 break;
             case GARDEN:
-                f.follow(Paths.line(f.pose(), garden).linear(f.pose(), garden));
+                f.follow(Paths.line(f.pose(), spikeMark).linear(f.pose(), spikeMark));
+              //  f.follow(Paths.line(f.pose(), spikeMarkPickup).linear(f.pose(), spikeMarkPickup));
+                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case RIGHT_SHOOT:
                 f.follow(Paths.line(f.pose(), start).linear(f.pose(), start));
+                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case TEST_POSE:
                 f.follow(Paths.line(f.pose(), testPose).linear(f.pose(), testPose));
+                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case WAIT_FOR_PATH:
                 if (!f.isBusy()) {
-                    setState(AutoState._NEXT_CMD);
+                    setState(AutoState.BEGIN);
                 }
                 break;
             case END:
@@ -198,10 +184,9 @@ public class AutoBuilder extends SpicyMode {
         s.loop();
         t.loop();
 
-        telemetry.addData("Current Command:", state);
-        telemetry.addData("Auto", commands);
-        telemetry.update();
         telemetryM.update(telemetry);
+        telemetry.addData("Auto", cPath);
+        telemetry.update();
     }
 
     void setState(AutoState state) {

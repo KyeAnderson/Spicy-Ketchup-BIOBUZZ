@@ -28,7 +28,7 @@ public class AutoBuilder extends SpicyMode {
     }
 
     enum AutoState {
-        BEGIN,
+        NEXT_COMMAND,
         RIGHT_SHOOT,
         LEFT_SHOOT,
         DOWN_FLOWER,
@@ -80,7 +80,7 @@ public class AutoBuilder extends SpicyMode {
     @Override
     public void init() {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-        state = AutoState.BEGIN;
+        state = AutoState.NEXT_COMMAND;
         p = PoseFactory.degrees();
         super.init();
         f = Constants.create(hardwareMap);
@@ -94,11 +94,11 @@ public class AutoBuilder extends SpicyMode {
 
         spikeMark = p.of(13, 12, 245);
         spikeMarkPickup = p.of(9, 9, 270);
-        testPose = p.of(10, 10, 0);
+        testPose = p.of(20, 20, 0);
 
 
         cPath = new ArrayList<>();
-        cPath.add(AutoState.BEGIN);
+        cPath.add(AutoState.NEXT_COMMAND);
         cPathDex=0;
 
         telemetry.addData("We're on", side.name());
@@ -140,29 +140,26 @@ public class AutoBuilder extends SpicyMode {
  //       if (cPathDex == cPath.size()) // Insurance in case we forget to add END
 //            setState(AutoState.END);
         switch(state) {
-            case BEGIN:
+            case NEXT_COMMAND:
                 cPathDex++;
                 setState(cPath.get(cPathDex));
                 break;
             case GARDEN:
                 f.follow(Paths.line(f.pose(), spikeMark).linear(f.pose(), spikeMark));
               //  f.follow(Paths.line(f.pose(), spikeMarkPickup).linear(f.pose(), spikeMarkPickup));
-                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case RIGHT_SHOOT:
                 f.follow(Paths.line(f.pose(), start).linear(f.pose(), start));
-                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case TEST_POSE:
                 f.follow(Paths.line(f.pose(), testPose).linear(f.pose(), testPose));
-                cPathDex++;
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case WAIT_FOR_PATH:
                 if (!f.isBusy()) {
-                    setState(AutoState.BEGIN);
+                    setState(AutoState.NEXT_COMMAND);
                 }
                 break;
             case END:
@@ -172,6 +169,9 @@ public class AutoBuilder extends SpicyMode {
 
     @Override
     public void loop() {
+        telemetryM.addData("Auto", cPath);
+        telemetryM.addData("cpathDex", cPathDex);
+        telemetryM.addData("Auto STATE", cPath.get(cPathDex).name());
         telemetryM.addLine(f.toString());
         telemetryM.addLine(i.toString());
         telemetryM.addLine(s.toString());
@@ -185,7 +185,6 @@ public class AutoBuilder extends SpicyMode {
         t.loop();
 
         telemetryM.update(telemetry);
-        telemetry.addData("Auto", cPath);
         telemetry.update();
     }
 

@@ -78,6 +78,12 @@ public class SpicyTele extends SpicyMode {
         }
 
 
+        if(gamepad1.triangle) {
+            if(!f.holding()) f.hold(f.pose());
+        } else {
+
+        }
+
         if(gamepad1.squareWasPressed()) {
             shooter.setCompression(HoodCompression.POLLEN);
         }

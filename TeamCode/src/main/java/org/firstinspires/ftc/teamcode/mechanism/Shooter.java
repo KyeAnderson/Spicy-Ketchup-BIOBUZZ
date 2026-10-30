@@ -26,6 +26,7 @@ public class Shooter extends Mechanism {
         velocity = 0;
         compress = HoodCompression.POLLEN;
         initializeMotors(flywheel);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         displayTelemetry("Hood Compression", ()->compress);

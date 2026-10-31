@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mechanism;
 
+import com.arcrobotics.ftclib.util.InterpLUT;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,15 +13,41 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public class Shooter extends Mechanism {
-    public static final int TESTING_SHOOTER_VELO = 1870;
+    public static final int TESTING_SHOOTER_VELO = 1700;
     DcMotorEx flywheel;
     Servo angle;
     HoodCompression compress;
     float velocity;
 
+    InterpLUT velocities;
+
+    double[][] distanceToGoalToRPM = {
+            {27.69085644, 1500},
+            {42.10126657, 1600},
+            {42.51417200, 1500},
+            {32.25463273, 1500},
+            {50.54109760, 1600},
+
+    };
+
     public Shooter(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
+        Arrays.sort(distanceToGoalToRPM, Comparator.comparingDouble(a -> a[0]));
+        velocities = new InterpLUT();
+
+        for(double[] pair : distanceToGoalToRPM) {
+            if(pair.length == 0 || pair.length == 1) {
+                throw new Error("Missing a pair of power!!");
+            }
+            velocities.add(pair[0], pair[1]);
+        }
+
+        velocities.createLUT();
+
         flywheel = hm.get(DcMotorEx.class, "fly");
         angle = hm.get(Servo.class, "ang");
         velocity = 0;
@@ -32,6 +59,20 @@ public class Shooter extends Mechanism {
         displayTelemetry("Hood Compression", ()->compress);
         displayTelemetry("Hood Angle", angle::getPosition);
         displayTelemetry("Flywheel velocity", flywheel::getVelocity);
+    }
+
+    public double getVelocityFor(double distance){
+        double minDistance = distanceToGoalToRPM[0][0]+.01;
+        double maxDistance = distanceToGoalToRPM[distanceToGoalToRPM.length-1][0]-.02;
+
+        double clampedDistance = Math.max(minDistance, Math.min(distance, maxDistance));
+        return velocities.get(clampedDistance);
+    }
+
+    public boolean atVelocityFor(double distance) {
+        double v= getVelocityFor(distance);
+        double tolerance = 50;
+        return Math.abs(getVelocity() - v) < tolerance;
     }
 
     public void setCompression(HoodCompression comp) {
@@ -56,6 +97,10 @@ public class Shooter extends Mechanism {
     public void loop() {
         flywheel.setVelocity(velocity);
         angle.setPosition(compress.getPosition());
+    }
+
+    public double getVelocity() {
+        return flywheel.getVelocity();
     }
 
     public HoodCompression getCompress() {

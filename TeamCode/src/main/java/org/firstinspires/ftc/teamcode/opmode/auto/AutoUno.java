@@ -51,7 +51,7 @@ public class AutoUno extends SpicyMode {
     Path startToSpikeMark() {
         return Paths
                 .curve(start,
-                        p.of(13, 21, 270),
+                        p.of(13, 20, 270),
                         spikeMark)
                 .linear(start, spikeMark);
     }
@@ -105,7 +105,7 @@ public class AutoUno extends SpicyMode {
         Globals.lastPose = f.pose();
 
         spikeMark = p.of(20, 40, 270);
-        spikeMarkPickup = p.of(12.7, 11, 270);
+        spikeMarkPickup = p.of(12.7, 17, 270);
 
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 96, 270);

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.opmode.SpicyPanelsTele;
 import org.firstinspires.ftc.teamcode.opmode.SpicyTele;
+import org.firstinspires.ftc.teamcode.opmode.TuneFlywheel;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoBuilder;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUnoCB;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 public class Globals {
     public static Pose lastPose;
+    public static Pose redBasketAudienceGoal = new Pose(58, 54);
     public static final boolean hideTests = false;
     static Set<SpicyMode> modes;
 
@@ -40,6 +42,8 @@ public class Globals {
 
         modes.add(new SpicyTele(Globals.MatchSide.RED));
         modes.add(new SpicyTele(Globals.MatchSide.BLUE));
+
+        modes.add(new TuneFlywheel(MatchSide.RED));
 
         modes.add(new AutoUno(Globals.MatchSide.RED));
         modes.add(new AutoUno(Globals.MatchSide.BLUE));

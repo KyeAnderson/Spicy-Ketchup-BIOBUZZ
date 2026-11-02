@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,28 +51,28 @@ public class AutoUno extends SpicyMode {
     Pose loadingZone;
     Path startToSpikeMark() {
         return Paths
-                .curve(start,
+                .curve(f.pose(),
                         p.of(13, 20, 270),
                         spikeMark)
-                .linear(start, spikeMark);
+                .linear(f.pose(), spikeMark);
     }
     Path pickupFromSpikeMark() {
         return Paths
-                .line(spikeMark, spikeMarkPickup)
-                .linear(spikeMark, spikeMarkPickup)
+                .line(f.pose(), spikeMarkPickup)
+                .linear(f.pose(), spikeMarkPickup)
                 .with(
                     Constants.foresightConfig.maxPathSpeed.at(0.5) // slow it down to pickup
                 );
     }
     Path spikeMarkToScore() {
         return Paths
-                .line(spikeMarkPickup, scorePostPickup)
-                .linear(spikeMarkPickup, scorePostPickup);
+                .line(f.pose(), scorePostPickup)
+                .linear(f.pose(), scorePostPickup);
     }
     Path finalScoreToLoadingZone() {
         return Paths
-                .line(scorePostPickup, loadingZone)
-                .linear(scorePostPickup, loadingZone);
+                .line(f.pose(), loadingZone)
+                .linear(f.pose(), loadingZone);
     }
     @Override
     public void onBlueInit() {
@@ -105,7 +106,7 @@ public class AutoUno extends SpicyMode {
         Globals.lastPose = f.pose();
 
         spikeMark = p.of(20, 40, 270);
-        spikeMarkPickup = p.of(12.7, 17, 270);
+        spikeMarkPickup = p.of(12.7, 12, 270);
 
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 96, 270);
@@ -121,7 +122,7 @@ public class AutoUno extends SpicyMode {
                 break;
             case MOVE_TO_SCORE:
                 s.setCompression(HoodCompression.POLLEN);
-                s.setVelocity(Shooter.TESTING_SHOOTER_VELO);
+                s.setVelocity((float)s.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
                 if(!f.isBusy()) {
                     setState(AutoState.BEGIN_SCORING);
                 }
@@ -190,6 +191,8 @@ public class AutoUno extends SpicyMode {
         telemetryM.addLine(i.toString());
         telemetryM.addLine(s.toString());
         telemetryM.addLine(t.toString());
+
+        Drawing.drawCurrent(f);
 
         telemetryM.update(telemetry);
         telemetry.update();

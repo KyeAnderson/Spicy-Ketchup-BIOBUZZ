@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 public class SpicyTele extends SpicyMode {
     public SpicyTele(Globals.MatchSide side) {super(side, Globals.ModeType.TELE);}
@@ -66,6 +67,7 @@ public class SpicyTele extends SpicyMode {
 
         if(triggerPressed) {
             shooter.setVelocity((float) shooter.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+//            shooter.setVelocity((float) shooter.getVelocityFor(f.pose()));
             if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
             else transfer.stop();
         } else {
@@ -107,6 +109,7 @@ public class SpicyTele extends SpicyMode {
         telemetry.addLine(shooter.toString());
         telemetry.addLine(transfer.toString());
 
+        Drawing.drawCurrent(f);
         intake.loop();
         shooter.loop();
         f.update();

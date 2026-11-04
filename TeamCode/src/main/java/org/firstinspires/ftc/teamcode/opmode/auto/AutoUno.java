@@ -51,28 +51,28 @@ public class AutoUno extends SpicyMode {
     Pose loadingZone;
     Path startToSpikeMark() {
         return Paths
-                .curve(f.pose(),
+                .curve(start,
                         p.of(13, 20, 270),
                         spikeMark)
-                .linear(f.pose(), spikeMark);
+                .linear(start, spikeMark);
     }
     Path pickupFromSpikeMark() {
         return Paths
-                .line(f.pose(), spikeMarkPickup)
-                .linear(f.pose(), spikeMarkPickup)
+                .line(spikeMark, spikeMarkPickup)
+                .linear(spikeMark, spikeMarkPickup)
                 .with(
-                    Constants.foresightConfig.maxPathSpeed.at(0.5) // slow it down to pickup
+                    Constants.foresightConfig.maxPathSpeed.at(0.75) // slow down for pickup without stalling
                 );
     }
     Path spikeMarkToScore() {
         return Paths
-                .line(f.pose(), scorePostPickup)
-                .linear(f.pose(), scorePostPickup);
+                .line(spikeMarkPickup, scorePostPickup)
+                .linear(spikeMarkPickup, scorePostPickup);
     }
     Path finalScoreToLoadingZone() {
         return Paths
-                .line(f.pose(), loadingZone)
-                .linear(f.pose(), loadingZone);
+                .line(scorePostPickup, loadingZone)
+                .linear(scorePostPickup, loadingZone);
     }
     @Override
     public void onBlueInit() {

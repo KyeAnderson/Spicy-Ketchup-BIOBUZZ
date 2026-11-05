@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.mechanism;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,7 +11,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
 
 import java.util.Arrays;
@@ -28,10 +26,10 @@ public class Shooter extends Mechanism {
     InterpLUT velocities;
 
     double[][] distanceToGoalToRPM = {
-            {27.69085644, 1600},
+            {27.69085644, 1500},
             {42.10126657, 1600},
-            {42.51417200, 1600},
-            {32.25463273, 1600},
+            {42.51417200, 1500},
+            {32.25463273, 1500},
             {50.54109760, 1600},
 
     };

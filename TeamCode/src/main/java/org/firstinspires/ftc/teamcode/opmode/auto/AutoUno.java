@@ -61,7 +61,7 @@ public class AutoUno extends SpicyMode {
                 .line(f.pose(), spikeMarkPickup)
                 .linear(f.pose(), spikeMarkPickup)
                 .with(
-                    Constants.foresightConfig.maxPathSpeed.at(0.5) // slow it down to pickup
+                    Constants.foresightConfig.maxPathSpeed.at(0.75) // slow it down to pickup
                 );
     }
     Path spikeMarkToScore() {
@@ -105,8 +105,8 @@ public class AutoUno extends SpicyMode {
 
         Globals.lastPose = f.pose();
 
-        spikeMark = p.of(20, 40, 270);
-        spikeMarkPickup = p.of(12.7, 12, 270);
+        spikeMark = p.of(20, 25, 270);
+        spikeMarkPickup = p.of(16, 18, 270);
 
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 96, 270);

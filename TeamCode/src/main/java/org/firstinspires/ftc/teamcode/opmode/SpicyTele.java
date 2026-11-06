@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
@@ -36,8 +35,6 @@ public class SpicyTele extends SpicyMode {
         super.init();
 
         f = Constants.create(hardwareMap);
-        f.setPose(new Pose(11, 10.5, Math.toRadians(0)));
-        f.update();
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
@@ -58,7 +55,6 @@ public class SpicyTele extends SpicyMode {
         double turn = -gamepad1.right_stick_x;
 
         f.manual(forward,lateral,turn);
-
         /// CONTROLS
 
         boolean triggerPressed = gamepad1.right_trigger > 0.7;
@@ -66,7 +62,7 @@ public class SpicyTele extends SpicyMode {
         boolean shouldIntake = shoulderPressed && !triggerPressed;
 
         if(triggerPressed) {
-            shooter.setVelocity((float) shooter.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+            shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
 //            shooter.setVelocity((float) shooter.getVelocityFor(f.pose()));
             if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
             else transfer.stop();
@@ -77,26 +73,23 @@ public class SpicyTele extends SpicyMode {
         if(shouldIntake) {
             intake.setVelocity(IntakeVelocity.ON);
             transfer.setVelocity(TransferVelocity.FRONT_ON);
-        } else if(gamepad1.left_bumper) {
-//            intake.setVelocity(IntakeVelocity.OUTTAKE);
-            transfer.setVelocity(TransferVelocity.OUTTAKE);
         } else {
             intake.stop();
             if(!triggerPressed) transfer.stop();
         }
 
 
+        if(gamepad1.triangle) {
+            if(!f.holding()) f.hold(f.pose());
+        } else {
+
+        }
+
         if(gamepad1.squareWasPressed()) {
             shooter.setCompression(HoodCompression.POLLEN);
         }
         if(gamepad1.circleWasPressed()) {
             shooter.setCompression(HoodCompression.NECTAR);
-        }
-
-        if(gamepad1.rightStickButtonWasPressed()) {
-//            f.hold(f.pose().withHeading(
-//
-//            ));
         }
 
         // TELEMETRY / LOOP

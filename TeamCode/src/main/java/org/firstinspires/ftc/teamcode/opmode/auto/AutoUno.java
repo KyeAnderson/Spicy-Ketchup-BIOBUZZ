@@ -51,28 +51,28 @@ public class AutoUno extends SpicyMode {
     Pose loadingZone;
     Path startToSpikeMark() {
         return Paths
-                .curve(start,
+                .curve(f.pose(),
                         p.of(13, 20, 270),
                         spikeMark)
-                .linear(start, spikeMark);
+                .linear(f.pose(), spikeMark);
     }
     Path pickupFromSpikeMark() {
         return Paths
-                .line(spikeMark, spikeMarkPickup)
-                .linear(spikeMark, spikeMarkPickup)
+                .line(f.pose(), spikeMarkPickup)
+                .linear(f.pose(), spikeMarkPickup)
                 .with(
-                    Constants.foresightConfig.maxPathSpeed.at(0.75) // slow down for pickup without stalling
+                    Constants.foresightConfig.maxPathSpeed.at(0.75) // slow it down to pickup
                 );
     }
     Path spikeMarkToScore() {
         return Paths
-                .line(spikeMarkPickup, scorePostPickup)
-                .linear(spikeMarkPickup, scorePostPickup);
+                .line(f.pose(), scorePostPickup)
+                .linear(f.pose(), scorePostPickup);
     }
     Path finalScoreToLoadingZone() {
         return Paths
-                .line(scorePostPickup, loadingZone)
-                .linear(scorePostPickup, loadingZone);
+                .line(f.pose(), loadingZone)
+                .linear(f.pose(), loadingZone);
     }
     @Override
     public void onBlueInit() {
@@ -105,8 +105,8 @@ public class AutoUno extends SpicyMode {
 
         Globals.lastPose = f.pose();
 
-        spikeMark = p.of(20, 40, 270);
-        spikeMarkPickup = p.of(12.7, 12, 270);
+        spikeMark = p.of(20, 25, 270);
+        spikeMarkPickup = p.of(16, 18, 270);
 
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 96, 270);

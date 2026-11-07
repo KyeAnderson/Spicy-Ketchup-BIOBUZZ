@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
@@ -35,6 +36,7 @@ public class SpicyTele extends SpicyMode {
         super.init();
 
         f = Constants.create(hardwareMap);
+        f.setPose(new Pose(58,10,0));
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
@@ -57,27 +59,42 @@ public class SpicyTele extends SpicyMode {
         f.manual(forward,lateral,turn);
         /// CONTROLS
 
-        boolean triggerPressed = gamepad1.right_trigger > 0.7;
-        boolean shoulderPressed = gamepad1.right_bumper;
-        boolean shouldIntake = shoulderPressed && !triggerPressed;
+        boolean rTriggerPressed = gamepad2.right_trigger > 0.7 || gamepad1.right_trigger > 0.7; // Incase 2 disconnects
+        boolean lTriggerPressed = gamepad2.left_trigger > 0.7 || gamepad1.left_trigger > 0.7; // Incase 2 disconnects
 
-        if(triggerPressed) {
+        boolean shoulderPressed = gamepad1.right_bumper;
+        boolean shouldIntake = shoulderPressed;
+        boolean shouldTransfer = gamepad2.circle || gamepad1.circle;
+
+
+        if(lTriggerPressed) {
             shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
 //            shooter.setVelocity((float) shooter.getVelocityFor(f.pose()));
-            if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
-            else transfer.stop();
-        } else {
+        //    if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
+        //    else transfer.stop();
+        } else if (rTriggerPressed){
+            shooter.setVelocity((float)shooter.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+         //   if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
+         //   else transfer.stop();
+        }else {
             shooter.stop();
         }
 
         if(shouldIntake) {
             intake.setVelocity(IntakeVelocity.ON);
-            transfer.setVelocity(TransferVelocity.FRONT_ON);
+          //  transfer.setVelocity(TransferVelocity.FRONT_ON);
         } else {
             intake.stop();
-            if(!triggerPressed) transfer.stop();
+          //  if(!rTriggerPressed || !lTriggerPressed) transfer.stop();
         }
 
+        if(shouldTransfer) {
+            transfer.setVelocity(TransferVelocity.ON);
+            //  transfer.setVelocity(TransferVelocity.FRONT_ON);
+        } else {
+            transfer.stop();
+            //  if(!rTriggerPressed || !lTriggerPressed) transfer.stop();
+        }
 
         if(gamepad1.triangle) {
             if(!f.holding()) f.hold(f.pose());
@@ -94,13 +111,16 @@ public class SpicyTele extends SpicyMode {
 
         // TELEMETRY / LOOP
 
-        telemetry.addLine("Gamepad1 Right Trigger: Shooter (set velocity to 1870 tps)");
+        telemetry.addLine("Gamepad1 Right Trigger: Shooter (set velocity to 1650 tps)");
         telemetry.addLine("Gamepad1 Right Bumper: Intake (hold)");
         telemetry.addLine("Gamepad1 Square: Set Hood Compression for Pollen");
         telemetry.addLine("Gamepad1 Circle: Set Hood Compression for Nectar");
         telemetry.addLine(intake.toString());
         telemetry.addLine(shooter.toString());
         telemetry.addLine(transfer.toString());
+        telemetry.addData("Pose", f.pose().toString());
+        telemetry.addData("Pose", f.pose().distance(Globals.redBasketAudienceGoal));
+
 
         Drawing.drawCurrent(f);
         intake.loop();

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Shooter extends Mechanism {
-    public static final int TESTING_SHOOTER_VELO = 1700;
+    public static final int TESTING_SHOOTER_VELO = 1650;
     DcMotorEx flywheel;
     Servo angle;
     HoodCompression compress;
@@ -26,12 +26,11 @@ public class Shooter extends Mechanism {
     InterpLUT velocities;
 
     double[][] distanceToGoalToRPM = {
-            {27.69085644, 1500},
+            {27.69085644, 1650},
             {42.10126657, 1600},
-            {42.51417200, 1500},
-            {32.25463273, 1500},
-            {50.54109760, 1600},
-
+       //     {42.51417200, 1500},
+       //     {32.25463273, 1500},
+        //    {50.54109760, 1600},
     };
 
     public Shooter(HardwareMap hm, Telemetry tele) {
@@ -86,7 +85,7 @@ public class Shooter extends Mechanism {
     }
 
     public boolean flywheelAtTarget() {
-        return Math.abs(flywheel.getVelocity() - velocity) < 50;
+        return velocity != 0 && Math.abs(flywheel.getVelocity() - velocity) < 50;
     }
 
     public void stop() {

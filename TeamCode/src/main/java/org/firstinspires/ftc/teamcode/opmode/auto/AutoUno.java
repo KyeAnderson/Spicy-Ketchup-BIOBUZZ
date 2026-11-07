@@ -99,7 +99,7 @@ public class AutoUno extends SpicyMode {
         i = new Intake(hardwareMap, telemetry);
         flywheelReadyToShoot = false;
         pickedUpSpikeMark = false;
-        start = p.of(58,10,0);
+        start = p.of(58,10,0); // pods of robot is y = 11.5, x = 1 if at corner (0,0)
         f.setPose(start);
         f.update();
 

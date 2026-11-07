@@ -46,7 +46,7 @@ public class TuneFlywheel extends SpicyMode {
         doubleList = new ArraySet<>();
 
         f = Constants.create(hardwareMap);
-        f.setPose(new Pose(11, 10.5, Math.toRadians(0)));
+        f.setPose(new Pose(58, 10, Math.toRadians(0)));
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);

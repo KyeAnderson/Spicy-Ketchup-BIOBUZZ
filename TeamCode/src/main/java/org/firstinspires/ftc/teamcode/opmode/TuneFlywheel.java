@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.opmode;
 
 import androidx.collection.ArraySet;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
@@ -21,16 +23,17 @@ public class TuneFlywheel extends SpicyMode {
     private Intake intake;
     private Shooter shooter;
     private Transfer transfer;
+    TelemetryManager telemetryM;
     ArraySet<double[]> doubleList;
 
     @Override
     public void onRedInit() {
-        telemetry.addLine("This will only show up on RED.");
+        telemetryM.addLine("This will only show up on RED.");
     }
 
     @Override
     public void onBlueInit() {
-        telemetry.addLine("This will only show up on BLUE.");
+        telemetryM.addLine("This will only show up on BLUE.");
     }
 
     float rpm = 1000;
@@ -39,6 +42,7 @@ public class TuneFlywheel extends SpicyMode {
     @Override
     public void init() {
         super.init();
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         doubleList = new ArraySet<>();
 
         f = Constants.create(hardwareMap);
@@ -47,8 +51,8 @@ public class TuneFlywheel extends SpicyMode {
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
 
-        telemetry.addData("We're on", side.name());
-        telemetry.update();
+        telemetryM.addData("We're on", side.name());
+        telemetryM.update(telemetry);
     }
 
 
@@ -109,26 +113,26 @@ public class TuneFlywheel extends SpicyMode {
 
         // TELEMETRY / LOOP
 
-        telemetry.addData("Edit Size", add);
-        telemetry.addData("d", f.pose().distance(Globals.redBasketAudienceGoal));
-        telemetry.addData("RPM", rpm);
-        telemetry.addData("CRV", shooter.getVelocity());
-        telemetry.addLine("G1 Dpad LEFT : -50RPM from size");
-        telemetry.addLine("G1 Dpad RIGHT : +50RPM from size");
-        telemetry.addLine("G1 Dpad UP : +" + add+"RPM");
-        telemetry.addLine("G1 Dpad DOWN : -" + add +"RPM");
+        telemetryM.addData("Edit Size", add);
+        telemetryM.addData("Distance to goal", f.pose().distance(Globals.redBasketAudienceGoal));
+        telemetryM.addData("RPM", rpm);
+        telemetryM.addData("Current Shooter Velocity", shooter.getVelocity());
+        telemetryM.addLine("G1 Dpad LEFT : -50RPM from edit size");
+        telemetryM.addLine("G1 Dpad RIGHT : +50RPM from edit size");
+        telemetryM.addLine("G1 Dpad UP : +" + add+"RPM");
+        telemetryM.addLine("G1 Dpad DOWN : -" + add +"RPM");
         for(double[] i : doubleList) {
-            telemetry.addLine("{" + i[0] + ", " + i[1]+"},");
+            telemetryM.addLine("{" + i[0] + ", " + i[1]+"},");
         }
-        telemetry.addLine(intake.toString());
-        telemetry.addLine(shooter.toString());
-        telemetry.addLine(transfer.toString());
+        telemetryM.addLine(intake.toString());
+        telemetryM.addLine(shooter.toString());
+        telemetryM.addLine(transfer.toString());
 
         intake.loop();
         shooter.loop();
         f.update();
         transfer.loop();
-        telemetry.update();
+        telemetryM.update(telemetry);
     }
 
     @Override

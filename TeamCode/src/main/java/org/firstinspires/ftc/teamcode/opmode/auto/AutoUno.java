@@ -45,6 +45,7 @@ public class AutoUno extends SpicyMode {
     Intake i;
 
     Pose start;
+    Pose scorePose;
     Pose spikeMark;
     Pose spikeMarkPickup;
     Pose scorePostPickup;
@@ -66,12 +67,17 @@ public class AutoUno extends SpicyMode {
     }
     Path spikeMarkToScore() {
         return Paths
-                .line(f.pose(), scorePostPickup)
-                .linear(f.pose(), scorePostPickup);
+                .line(f.pose(), scorePose)
+                .linear(f.pose(), scorePose);
+    }
+    Path startToScore() {
+        return Paths
+                .line(f.pose(), scorePose)
+                .linear(f.pose(), scorePose);
     }
     Path finalScoreToLoadingZone() {
         return Paths
-                .line(f.pose(), loadingZone)
+                .curve(f.pose(), new Pose(12,62,270), loadingZone)
                 .linear(f.pose(), loadingZone);
     }
     @Override
@@ -104,12 +110,13 @@ public class AutoUno extends SpicyMode {
         f.update();
 
         Globals.lastPose = f.pose();
+        scorePose = p.of(58,12, 6.7);
 
-        spikeMark = p.of(20, 25, 270);
-        spikeMarkPickup = p.of(16, 18, 270);
+        spikeMark = p.of(6, 25, 270);
+        spikeMarkPickup = p.of(6, 12, 270);
 
         scorePostPickup = p.of(58, 125, 180);
-        loadingZone = p.of(12, 96, 270);
+        loadingZone = p.of(12, 92, 270);
 
         telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
@@ -118,6 +125,7 @@ public class AutoUno extends SpicyMode {
     public void fsmRoutine() {
         switch(state) {
             case BEGIN:
+                f.follow(startToScore());
                 setState(AutoState.MOVE_TO_SCORE);
                 break;
             case MOVE_TO_SCORE:
@@ -162,7 +170,6 @@ public class AutoUno extends SpicyMode {
                 i.setVelocity(IntakeVelocity.ON);
                 if(!f.isBusy()) {
                     f.follow(spikeMarkToScore());
-                    i.stop();
                     pickedUpSpikeMark = true;
                     setState(AutoState.MOVE_TO_SCORE);
                 }

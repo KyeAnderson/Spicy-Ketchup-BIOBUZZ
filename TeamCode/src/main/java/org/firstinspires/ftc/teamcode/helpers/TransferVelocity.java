@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.helpers;
 public enum TransferVelocity {
     OFF(0, 0),
     FRONT_ON(1500, 0),
-    OUTTAKE(-1500, 0),
+    OUTTAKE(-1500, -1),
     ON(1500, 1);
     final int power;
     final double cPower;

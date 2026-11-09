@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.opmode.TuneFlywheel;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoBuilder;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUnoCB;
+import org.firstinspires.ftc.teamcode.opmode.auto.Match2Auto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,6 +48,8 @@ public class Globals {
 
         modes.add(new AutoUno(Globals.MatchSide.RED));
         modes.add(new AutoUno(Globals.MatchSide.BLUE));
+
+        modes.add(new Match2Auto(Globals.MatchSide.BLUE));
 
         modes.add(new AutoBuilder(Globals.MatchSide.RED));
         modes.add(new AutoBuilder(Globals.MatchSide.BLUE));

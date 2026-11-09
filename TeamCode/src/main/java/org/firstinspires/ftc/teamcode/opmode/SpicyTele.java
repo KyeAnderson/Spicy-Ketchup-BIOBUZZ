@@ -62,51 +62,34 @@ public class SpicyTele extends SpicyMode {
         boolean rTriggerPressed = gamepad2.right_trigger > 0.7 || gamepad1.right_trigger > 0.7; // Incase 2 disconnects
         boolean lTriggerPressed = gamepad2.left_trigger > 0.7 || gamepad1.left_trigger > 0.7; // Incase 2 disconnects
 
-        boolean shoulderPressed = gamepad1.right_bumper;
-        boolean shouldIntake = shoulderPressed;
+        boolean shouldIntake = gamepad1.right_bumper || gamepad2.right_bumper;
+        boolean shouldReverseTransfer = gamepad2.cross;
+        boolean shouldReverseIntake = gamepad2.square;
         boolean shouldTransfer = gamepad2.circle || gamepad1.circle;
 
 
         if(lTriggerPressed) {
             shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
-//            shooter.setVelocity((float) shooter.getVelocityFor(f.pose()));
-        //    if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
-        //    else transfer.stop();
         } else if (rTriggerPressed){
             shooter.setVelocity((float)shooter.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
-         //   if(shooter.flywheelAtTarget()) transfer.setVelocity(TransferVelocity.ON);
-         //   else transfer.stop();
         }else {
             shooter.stop();
         }
 
         if(shouldIntake) {
             intake.setVelocity(IntakeVelocity.ON);
-          //  transfer.setVelocity(TransferVelocity.FRONT_ON);
+        } else if(shouldReverseIntake){
+            intake.setVelocity(IntakeVelocity.OUTTAKE);
         } else {
             intake.stop();
-          //  if(!rTriggerPressed || !lTriggerPressed) transfer.stop();
         }
 
         if(shouldTransfer) {
             transfer.setVelocity(TransferVelocity.ON);
-            //  transfer.setVelocity(TransferVelocity.FRONT_ON);
+        } else if(shouldReverseTransfer) {
+            transfer.setVelocity(TransferVelocity.OUTTAKE);
         } else {
             transfer.stop();
-            //  if(!rTriggerPressed || !lTriggerPressed) transfer.stop();
-        }
-
-        if(gamepad1.triangle) {
-            if(!f.holding()) f.hold(f.pose());
-        } else {
-
-        }
-
-        if(gamepad1.squareWasPressed()) {
-            shooter.setCompression(HoodCompression.POLLEN);
-        }
-        if(gamepad1.circleWasPressed()) {
-            shooter.setCompression(HoodCompression.NECTAR);
         }
 
         // TELEMETRY / LOOP

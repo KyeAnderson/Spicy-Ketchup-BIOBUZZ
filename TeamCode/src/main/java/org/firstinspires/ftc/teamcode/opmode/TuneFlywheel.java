@@ -28,12 +28,10 @@ public class TuneFlywheel extends SpicyMode {
 
     @Override
     public void onRedInit() {
-        telemetryM.addLine("This will only show up on RED.");
     }
 
     @Override
     public void onBlueInit() {
-        telemetryM.addLine("This will only show up on BLUE.");
     }
 
     float rpm = 1000;
@@ -85,7 +83,6 @@ public class TuneFlywheel extends SpicyMode {
             intake.setVelocity(IntakeVelocity.ON);
             transfer.setVelocity(TransferVelocity.FRONT_ON);
         } else if(gamepad1.left_bumper) {
-//            intake.setVelocity(IntakeVelocity.OUTTAKE);
             transfer.setVelocity(TransferVelocity.OUTTAKE);
         } else {
             intake.stop();

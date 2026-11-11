@@ -18,6 +18,7 @@ import java.util.Comparator;
 
 public class Shooter extends Mechanism {
     public static final int TESTING_SHOOTER_VELO = 1650;
+    public static final int GOOD_VELO_FOUND = 2145; // this value gud
     DcMotorEx flywheel;
     Servo angle;
     HoodCompression compress;
@@ -113,6 +114,7 @@ public class Shooter extends Mechanism {
         return compress;
     }
 
+    double TestRPM = 2145;
     @Override
     public void test(Gamepad g1, Gamepad g2, TelemetryManager telemetryM, Follower follower) {
         if(g1.squareWasPressed()) {
@@ -122,7 +124,15 @@ public class Shooter extends Mechanism {
             setCompression(HoodCompression.NECTAR);
         }
 
+        if(g1.dpadUpWasPressed()) {
+            TestRPM += 5;
+        }
+        if(g1.dpadDownWasPressed()) {
+            TestRPM -= 5;
+        }
 
+        setVelocity((float)TestRPM);
+        telemetryM.addData("TestRPM", TestRPM);
         telemetryM.addLine("Press square to set HoodCompression.POLLEN");
         telemetryM.addLine("Press circle to set HoodCompression.NECTAR");
     }

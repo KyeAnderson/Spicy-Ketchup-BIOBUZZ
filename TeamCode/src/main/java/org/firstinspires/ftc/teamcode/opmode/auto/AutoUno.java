@@ -8,12 +8,11 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.utils.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
-import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
-import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
-import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
+import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
@@ -22,11 +21,8 @@ import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 import java.util.concurrent.TimeUnit;
 
-public class AutoUno extends SpicyMode {
-    public AutoUno(Globals.MatchSide side) {
-        super(side, Globals.ModeType.AUTO);
-    }
-
+@Autonomous(name = "AUTO 1...")
+public class AutoUno extends OpMode {
     enum AutoState {
         BEGIN,
         MOVE_TO_SCORE,
@@ -41,6 +37,7 @@ public class AutoUno extends SpicyMode {
     PoseFactory p;
     Follower f;
     Shooter s;
+    Hood h;
     Transfer t;
     Intake i;
 
@@ -80,11 +77,6 @@ public class AutoUno extends SpicyMode {
                 .curve(f.pose(), new Pose(12,62,270), loadingZone)
                 .linear(f.pose(), loadingZone);
     }
-    @Override
-    public void onBlueInit() {
-        p = p.mirrorAroundPoint(70.75,70.75);
-        telemetry.addLine("blue");
-    }
     boolean pickedUpSpikeMark = false;
     boolean flywheelReadyToShoot = false;
     boolean DEBUG_MODE = true;
@@ -98,8 +90,8 @@ public class AutoUno extends SpicyMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         state = AutoState.BEGIN;
         p = PoseFactory.degrees();
-        super.init();
         f = Constants.create(hardwareMap);
+        h = new Hood(hardwareMap, telemetry);
         s = new Shooter(hardwareMap, telemetry);
         t = new Transfer(hardwareMap, telemetry);
         i = new Intake(hardwareMap, telemetry);
@@ -118,7 +110,6 @@ public class AutoUno extends SpicyMode {
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 92, 270);
 
-        telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
     }
 
@@ -129,8 +120,8 @@ public class AutoUno extends SpicyMode {
                 setState(AutoState.MOVE_TO_SCORE);
                 break;
             case MOVE_TO_SCORE:
-                s.setCompression(HoodCompression.POLLEN);
-                s.setVelocity((float)s.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+                h.setupPollen();
+                s.setVelocity(s.getVelocityForDist(f.pose().distance(Globals.redBasketAudienceGoal)));
                 if(!f.isBusy()) {
                     setState(AutoState.BEGIN_SCORING);
                 }
@@ -141,11 +132,11 @@ public class AutoUno extends SpicyMode {
                         flywheelReadyToShoot = true;
                         scoreTimer.reset();
                     }
-                    t.setVelocity(TransferVelocity.ON);
+                    t.transfer();
                 } else {
                     t.stop();
                 }
-                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= s.getCompress().getTime() * 4) {
+                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= h.getCompression().getTimeToScore() * 4) {
                     // If we've scored (3 pollen, estimated score time)
                     t.stop();
                     s.stop();
@@ -160,14 +151,14 @@ public class AutoUno extends SpicyMode {
                 }
                 break;
             case MOVE_TO_SPIKE_MARK:
-                i.setVelocity(IntakeVelocity.SLOW);
+                i.slowIntake();
                 if(!f.isBusy()) {
                     f.follow(pickupFromSpikeMark());
                     setState(AutoState.PICKUP_FROM_SPIKE_MARK);
                 }
                 break;
             case PICKUP_FROM_SPIKE_MARK:
-                i.setVelocity(IntakeVelocity.ON);
+                i.intake();
                 if(!f.isBusy()) {
                     f.follow(spikeMarkToScore());
                     pickedUpSpikeMark = true;
@@ -222,10 +213,5 @@ public class AutoUno extends SpicyMode {
     void setState(AutoState state) {
         this.state = state;
         stateTimer.reset();
-    }
-
-    @Override
-    public String getOpModeName() {
-        return "AUTO 1... %s";
     }
 }

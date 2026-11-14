@@ -6,11 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.opmode.SpicyPanelsTele;
-import org.firstinspires.ftc.teamcode.opmode.SpicyTele;
-import org.firstinspires.ftc.teamcode.opmode.TuneFlywheel;
-import org.firstinspires.ftc.teamcode.opmode.auto.AutoBuilder;
 import org.firstinspires.ftc.teamcode.opmode.auto.AutoUno;
-import org.firstinspires.ftc.teamcode.opmode.auto.AutoUnoCB;
 import org.firstinspires.ftc.teamcode.opmode.auto.Match2Auto;
 
 import java.util.HashSet;
@@ -20,61 +16,4 @@ public class Globals {
     public static Pose lastPose;
     public static Pose redBasketAudienceGoal = new Pose(58, 54);
     public static final boolean hideTests = false;
-    static Set<SpicyMode> modes;
-
-    public enum MatchSide {
-        RED,
-        BLUE,
-    }
-
-    public enum ModeType {
-        AUTO,
-        TELE
-    }
-
-
-    ///  ====== OPMODE REGISTRATION
-    /// TODO: Add OpModes here
-    private static Set<SpicyMode> buildOpModes() {
-        modes = new HashSet<>();
-
-
-        modes.add(new SpicyPanelsTele(Globals.MatchSide.BLUE));
-
-        modes.add(new SpicyTele(Globals.MatchSide.RED));
-        modes.add(new SpicyTele(Globals.MatchSide.BLUE));
-
-        modes.add(new TuneFlywheel(MatchSide.RED));
-
-        modes.add(new AutoUno(Globals.MatchSide.RED));
-        modes.add(new AutoUno(Globals.MatchSide.BLUE));
-
-        modes.add(new Match2Auto(Globals.MatchSide.BLUE));
-
-        modes.add(new AutoBuilder(Globals.MatchSide.RED));
-        modes.add(new AutoBuilder(Globals.MatchSide.BLUE));
-
-        modes.add(new AutoUnoCB(Globals.MatchSide.RED));
-
-        return modes;
-    }
-
-    @OpModeRegistrar
-    public static void register(OpModeManager manager) {
-        for(SpicyMode mode : buildOpModes()) {
-            manager.register(metaForMode(mode), mode);
-        }
-    }
-
-    public static OpModeMeta metaForMode(SpicyMode mode) {
-        String name = mode.getOpModeName();
-        if(mode.getOpModeName().contains("%s")) { // able to add the side's name
-            name = String.format(mode.getOpModeName(), mode.side.name());
-        }
-        return new OpModeMeta.Builder()
-                .setName(name)
-                .setFlavor(mode.mode == ModeType.TELE ? OpModeMeta.Flavor.TELEOP : OpModeMeta.Flavor.AUTONOMOUS)
-                .setSource(OpModeMeta.Source.BLOCKLY)
-                .build();
-    }
 }

@@ -8,12 +8,12 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.utils.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
-import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
-import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
-import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
+import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
@@ -22,11 +22,9 @@ import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 import java.util.concurrent.TimeUnit;
 
-public class Match2Auto extends SpicyMode {
-    public Match2Auto(Globals.MatchSide side) {
-        super(side, Globals.ModeType.AUTO);
-    }
-
+@Disabled
+@Autonomous(name = "LM1 Match 2 AUTO...")
+public class Match2Auto extends OpMode {
     enum AutoState {
         BEGIN,
         MOVE_TO_SCORE,
@@ -39,6 +37,7 @@ public class Match2Auto extends SpicyMode {
     PoseFactory p;
     Follower f;
     Shooter s;
+    Hood h;
     Transfer t;
     Intake i;
 
@@ -69,9 +68,9 @@ public class Match2Auto extends SpicyMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         state = AutoState.BEGIN;
         p = PoseFactory.degrees();
-        super.init();
         f = Constants.create(hardwareMap);
         s = new Shooter(hardwareMap, telemetry);
+        h = new Hood(hardwareMap, telemetry);
         t = new Transfer(hardwareMap, telemetry);
         i = new Intake(hardwareMap, telemetry);
         flywheelReadyToShoot = false;
@@ -85,7 +84,6 @@ public class Match2Auto extends SpicyMode {
 
         loadingZone = p.of(11, 119, 270);
 
-        telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
     }
 
@@ -100,9 +98,9 @@ public class Match2Auto extends SpicyMode {
                 setState(AutoState.MOVE_TO_SCORE);
                 break;
             case MOVE_TO_SCORE:
-                s.setCompression(HoodCompression.POLLEN);
+                h.setupPollen();
                 if(waitTimer.get(TimeUnit.SECONDS) >=18) {
-                    s.setVelocity((float)s.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+                    s.setVelocity(s.getVelocityForDist(f.pose().distance(Globals.redBasketAudienceGoal)));
                 }
                 if(!f.isBusy() && waitTimer.get(TimeUnit.SECONDS) >= 21) {
                     setState(AutoState.BEGIN_SCORING);
@@ -114,11 +112,11 @@ public class Match2Auto extends SpicyMode {
                         flywheelReadyToShoot = true;
                         scoreTimer.reset();
                     }
-                    t.setVelocity(TransferVelocity.ON);
+                    t.transfer();
                 } else {
                     t.stop();
                 }
-                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= s.getCompress().getTime() * 4) {
+                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= h.getCompression().getTimeToScore() * 4) {
                     // If we've scored (3 pollen, estimated score time)
                     t.stop();
                     s.stop();
@@ -175,10 +173,5 @@ public class Match2Auto extends SpicyMode {
     void setState(AutoState state) {
         this.state = state;
         stateTimer.reset();
-    }
-
-    @Override
-    public String getOpModeName() {
-        return "Match 2 AUTO... %s";
     }
 }

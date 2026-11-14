@@ -7,14 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Turret extends Mechanism {
     Servo s1;
     Servo s2;
     public Turret(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
-        s1 = hm.get(Servo.class, "ts1");
-        s2 = hm.get(Servo.class, "ts2");
+        s1 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_L.getId());
+        s2 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_R.getId());
     }
 
     @Override

@@ -9,10 +9,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
+import org.firstinspires.ftc.teamcode.mechanism.Turret;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -20,7 +22,6 @@ public class TestRegistry {
     static class GenericTest extends OpMode {
         public Class<? extends Mechanism> mechanismClass;
         Mechanism mechanism;
-//        Follower follower;
         TelemetryManager telemetryM;
 
         public GenericTest(Class<? extends Mechanism> m) {
@@ -40,10 +41,7 @@ public class TestRegistry {
                 telemetryM.update(telemetry);
                 return;
             }
-//            follower = Constants.createFollower(hardwareMap);
-//            follower.setPose(new Pose(72, 72, 0));
             telemetryM.update(telemetry);
-//            Drawing.drawCurrent(follower);
             telemetry.update();
         }
 
@@ -52,7 +50,6 @@ public class TestRegistry {
             mechanism.loop();
             mechanism.test(gamepad1, gamepad2, telemetryM, null);
 
-//            follower.update();
             telemetryM.addLine(mechanism.toString());
             telemetryM.update(telemetry);
             telemetry.update();
@@ -63,7 +60,7 @@ public class TestRegistry {
                     .setName("TEST: " + mechanismClass.getSimpleName())
                     .setFlavor(OpModeMeta.Flavor.TELEOP)
                     .setGroup("Tests")
-                    .setSource(OpModeMeta.Source.BLOCKLY)
+                    .setSource(OpModeMeta.Source.EXTERNAL_LIBRARY)
                     .build();
         }
     }
@@ -76,7 +73,9 @@ public class TestRegistry {
                     // TODO: Add more testable mechanisms
                     new GenericTest(Intake.class),
                     new GenericTest(Shooter.class),
-                    new GenericTest(Transfer.class)
+                    new GenericTest(Transfer.class),
+                    new GenericTest(Hood.class),
+                    new GenericTest(Turret.class)
             };
 
             for (GenericTest mode : modes) {

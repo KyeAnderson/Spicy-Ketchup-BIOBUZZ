@@ -8,25 +8,18 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.utils.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.helpers.Globals;
-import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
-import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
-import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-public class AutoBuilder extends SpicyMode {
-    public AutoBuilder(Globals.MatchSide side) {
-        super(side, Globals.ModeType.AUTO);
-    }
-
+@Autonomous(name = "Auto Builder")
+public class AutoBuilder extends OpMode {
     enum AutoState {
         NEXT_COMMAND,
         RIGHT_SHOOT,
@@ -68,10 +61,6 @@ public class AutoBuilder extends SpicyMode {
         return Paths.line(f.pose(), start).linear(f.pose(), start);
     }
 
-    @Override
-    public void onBlueInit() {
-        p = p.mirrorAroundPoint(70.75,70.75);
-    }
     boolean flywheelReadyToShoot = false;
     Timer scoreTimer = new Timer();
 
@@ -82,7 +71,6 @@ public class AutoBuilder extends SpicyMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         state = AutoState.NEXT_COMMAND;
         p = PoseFactory.degrees();
-        super.init();
         f = Constants.create(hardwareMap);
         s = new Shooter(hardwareMap, telemetry);
         t = new Transfer(hardwareMap, telemetry);
@@ -101,7 +89,6 @@ public class AutoBuilder extends SpicyMode {
         cPath.add(AutoState.NEXT_COMMAND);
         cPathDex=0;
 
-        telemetry.addData("We're on", side.name());
         telemetryM.update(telemetry);
     }
     @Override
@@ -190,10 +177,5 @@ public class AutoBuilder extends SpicyMode {
 
     void setState(AutoState state) {
         this.state = state;
-    }
-
-    @Override
-    public String getOpModeName() {
-        return "AUTO BUILD... %s";
     }
 }

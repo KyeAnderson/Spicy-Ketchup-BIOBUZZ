@@ -8,32 +8,62 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
+import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Transfer extends Mechanism {
-    TransferVelocity transferVelo;
-    DcMotorEx transfer;
-    CRServo tServo;
+    public enum TransferVelocity {
+        OFF(0, 0),
+        FRONT_ON(1500, 0),
+        OUTTAKE(-1500, -1),
+        ON(1500, 1);
+        final int motorVelocity;
+        final double servoPower;
+        TransferVelocity(int i, double c) {
+            motorVelocity = i;
+            servoPower = c;
+        }
+
+        public double getServoPower() {
+            return servoPower;
+        }
+
+        public int getMotorVelocity() {
+            return motorVelocity;
+        }
+    }
+
+    TransferVelocity setpointVelocity;
+    DcMotorEx motor;
+    CRServo servo;
     public Transfer(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
-        transfer = hm.get(DcMotorEx.class, "tf");
-        tServo = hm.get(CRServoImpl.class, "ts");
-        transferVelo = TransferVelocity.OFF;
-        displayTelemetry("Transfer Velo", () -> transferVelo.name());
-        displayTelemetry("Current Velocity", transfer::getVelocity);
-        displayTelemetry("Current Servo Power", tServo::getPower);
-        displayTelemetry("Setpoint Velocity", ()->transferVelo.getPower());
-        displayTelemetry("Setpoint Servo Power", ()->transferVelo.getCPower());
-        transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        initializeMotors(transfer);
+        motor = hm.get(DcMotorEx.class, HardwareConstants.TRANSFER_MOTOR.getId());
+        servo = hm.get(CRServoImpl.class, HardwareConstants.TRANSFER_SERVO.getId());
+        setpointVelocity = TransferVelocity.OFF;
+        displayTelemetry("Target Mode", () -> setpointVelocity.name());
+        displayTelemetry("Current Velocity", motor::getVelocity);
+        displayTelemetry("Current Servo Power", servo::getPower);
+        displayTelemetry("Setpoint Velocity", ()-> setpointVelocity.getMotorVelocity());
+        displayTelemetry("Setpoint Servo Power", ()-> setpointVelocity.getServoPower());
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        initializeMotors(motor);
     }
 
     public void setVelocity(TransferVelocity velo) {
-        if(transferVelo == velo) return;
-        transferVelo = velo;
+        if(setpointVelocity == velo) return;
+        setpointVelocity = velo;
+    }
+
+    public void runFrontOnly() {
+        setVelocity(TransferVelocity.FRONT_ON);
+    }
+    public void outtake() {
+        setVelocity(TransferVelocity.OUTTAKE);
+    }
+    public void transfer() {
+        setVelocity(TransferVelocity.ON);
     }
 
     public void stop() {
@@ -42,24 +72,23 @@ public class Transfer extends Mechanism {
 
     @Override
     public void loop() {
-        transfer.setVelocity(transferVelo.getPower());
-        tServo.setPower(transferVelo.getCPower());
+        motor.setVelocity(setpointVelocity.getMotorVelocity());
+        servo.setPower(setpointVelocity.getServoPower());
     }
 
     @Override
     public void test(Gamepad g1, Gamepad g2, TelemetryManager telemetryM, Follower follower) {
-        telemetryM.addLine("TransferVelocity.ON = " + TransferVelocity.ON.getPower());
-        telemetryM.addLine("TransferVelocity.OFF = " + TransferVelocity.OFF.getPower());
-        telemetryM.addLine("Gamepad 1 | Square: set velocity to TransferVelocity.ON");
-        telemetryM.addLine("Gamepad 1 | Circle: set velocity to TransferVelocity.OFF");
+        telemetryM.addLine("G1 / Square: set velocity to TransferVelocity.ON");
+        telemetryM.addLine("G1 / Triangle: set velocity to TransferVelocity.FRONT_ONLY");
+        telemetryM.addLine("G1 / Circle: set velocity to TransferVelocity.OFF");
         if(g1.squareWasPressed()) {
-            setVelocity(TransferVelocity.ON);
+            transfer();
         }
         if(g1.triangleWasPressed()) {
-            setVelocity(TransferVelocity.FRONT_ON);
+            runFrontOnly();
         }
         if(g1.circleWasPressed()) {
-            setVelocity(TransferVelocity.OFF);
+            stop();
         }
 
     }

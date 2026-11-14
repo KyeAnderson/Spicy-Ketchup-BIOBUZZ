@@ -4,47 +4,38 @@ import com.bylazar.gamepad.GamepadManager;
 import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
-import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
-import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
-import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
+import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-public class SpicyPanelsTele extends SpicyMode {
-    public SpicyPanelsTele(Globals.MatchSide side) {super(side, Globals.ModeType.TELE);}
+@Disabled
+@TeleOp(name="Panels gamepad test")
+public class SpicyPanelsTele extends OpMode {
     private Follower f;
     private Intake intake;
+    private Hood hood;
     private Shooter shooter;
     private Transfer transfer;
 
     @Override
-    public void onRedInit() {
-        telemetry.addLine("This will only show up on RED.");
-    }
-
-    @Override
-    public void onBlueInit() {
-        telemetry.addLine("This will only show up on BLUE.");
-    }
-
-    @Override
     public void init() {
-        super.init();
 
         f = Constants.create(hardwareMap);
         f.setPose(PoseFactory.degrees().of(56,9,0));
         f.update();
         intake = new Intake(hardwareMap, telemetry);
+        hood = new Hood(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
 
-        telemetry.addData("We're on", side.name());
         telemetry.update();
     }
 
@@ -69,7 +60,7 @@ public class SpicyPanelsTele extends SpicyMode {
         if(a.right_trigger > 0.7) {
             shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
             if(shooter.flywheelAtTarget()) {
-                transfer.setVelocity(TransferVelocity.ON);
+                transfer.transfer();
             } else {
                 transfer.stop();
             }
@@ -78,16 +69,16 @@ public class SpicyPanelsTele extends SpicyMode {
             transfer.stop();
         }
         if(a.right_bumper) {
-            intake.setVelocity(IntakeVelocity.ON);
+            intake.intake();
         } else {
             intake.stop();
         }
 
         if(a.squareWasPressed()) {
-            shooter.setCompression(HoodCompression.POLLEN);
+            hood.setupPollen();
         }
         if(a.circleWasPressed()) {
-            shooter.setCompression(HoodCompression.NECTAR);
+            hood.setupNectar();
         }
 
         // TELEMETRY / LOOP
@@ -105,10 +96,5 @@ public class SpicyPanelsTele extends SpicyMode {
         shooter.loop();
         f.update();
         telemetry.update();
-    }
-
-    @Override
-    public String getOpModeName() {
-        return "Panels %s";
     }
 }

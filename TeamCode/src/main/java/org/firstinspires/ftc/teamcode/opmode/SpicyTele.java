@@ -2,49 +2,33 @@ package org.firstinspires.ftc.teamcode.opmode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
-import org.firstinspires.ftc.teamcode.helpers.HoodCompression;
-import org.firstinspires.ftc.teamcode.helpers.IntakeVelocity;
-import org.firstinspires.ftc.teamcode.helpers.SpicyMode;
-import org.firstinspires.ftc.teamcode.helpers.TransferVelocity;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
-public class SpicyTele extends SpicyMode {
-    public SpicyTele(Globals.MatchSide side) {super(side, Globals.ModeType.TELE);}
+@TeleOp(name="Powell at League Meet 2: Hola")
+public class SpicyTele extends OpMode {
     private Follower f;
     private Intake intake;
     private Shooter shooter;
     private Transfer transfer;
 
     @Override
-    public void onRedInit() {
-        telemetry.addLine("This will only show up on RED.");
-    }
-
-    @Override
-    public void onBlueInit() {
-        telemetry.addLine("This will only show up on BLUE.");
-    }
-
-    @Override
     public void init() {
-        super.init();
-
         f = Constants.create(hardwareMap);
         f.setPose(new Pose(58,10,0));
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
 
-        telemetry.addData("We're on", side.name());
         telemetry.update();
     }
-
 
     @Override
     public void loop() {
@@ -71,23 +55,23 @@ public class SpicyTele extends SpicyMode {
         if(lTriggerPressed) {
             shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
         } else if (rTriggerPressed){
-            shooter.setVelocity((float)shooter.getVelocityFor(f.pose().distance(Globals.redBasketAudienceGoal)));
+            shooter.setVelocity(shooter.getVelocityForDist(f.pose().distance(Globals.redBasketAudienceGoal)));
         }else {
             shooter.stop();
         }
 
         if(shouldIntake) {
-            intake.setVelocity(IntakeVelocity.ON);
+            intake.intake();
         } else if(shouldReverseIntake){
-            intake.setVelocity(IntakeVelocity.OUTTAKE);
+            intake.outtake();
         } else {
             intake.stop();
         }
 
         if(shouldTransfer) {
-            transfer.setVelocity(TransferVelocity.ON);
+            transfer.transfer();
         } else if(shouldReverseTransfer) {
-            transfer.setVelocity(TransferVelocity.OUTTAKE);
+            transfer.outtake();
         } else {
             transfer.stop();
         }
@@ -113,8 +97,4 @@ public class SpicyTele extends SpicyMode {
         telemetry.update();
     }
 
-    @Override
-    public String getOpModeName() {
-        return "Colton at League Meet 1: %s";
-    }
 }

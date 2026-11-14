@@ -27,28 +27,24 @@ public class SpicyTele extends OpMode {
 
     @Override
     public void loop() {
-        /// DRIVE
+        /// DRIVE + CONTROLS
 
         double forward = -gamepad1.left_stick_y;
         double lateral = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
 
-        robot.follower().manual(forward,lateral,turn);
-
-        /// CONTROLS
-
-        boolean rTriggerPressed = gamepad2.right_trigger > 0.7 || gamepad1.right_trigger > 0.7; // Incase 2 disconnects
-        boolean lTriggerPressed = gamepad2.left_trigger > 0.7 || gamepad1.left_trigger > 0.7; // Incase 2 disconnects
-
+        boolean shouldDynamicVelocity = gamepad2.right_trigger > 0.7 || gamepad1.right_trigger > 0.7; // Incase 2 disconnects
+        boolean shouldStaticVelocity = gamepad2.left_trigger > 0.7 || gamepad1.left_trigger > 0.7; // Incase 2 disconnects
         boolean shouldIntake = gamepad1.right_bumper || gamepad2.right_bumper;
         boolean shouldReverseTransfer = gamepad2.cross;
         boolean shouldReverseIntake = gamepad2.square;
         boolean shouldTransfer = gamepad2.circle || gamepad1.circle;
 
+        robot.follower().manual(forward, lateral, turn);
 
-        if(lTriggerPressed) {
+        if(shouldStaticVelocity) {
             robot.shooter().setVelocity(Shooter.TESTING_SHOOTER_VELO);
-        } else if (rTriggerPressed){
+        } else if (shouldDynamicVelocity){
             robot.shooter().setVelocity(
                     robot.shooterVelocityFor(Globals.redBasketAudienceGoal)
             );

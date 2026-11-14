@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,14 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.mechanism.Robot;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
-import org.firstinspires.ftc.teamcode.mechanism.Intake;
-import org.firstinspires.ftc.teamcode.mechanism.Transfer;
-import org.firstinspires.ftc.teamcode.pedro.Constants;
-import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 @TeleOp(name="Powell at League Meet 2: Hola")
 public class SpicyTele extends OpMode {
     private Robot robot;
+    private boolean showDebugInfo = false;
 
     @Override
     public void init() {
@@ -39,6 +35,7 @@ public class SpicyTele extends OpMode {
         boolean shouldReverseTransfer = gamepad2.cross;
         boolean shouldReverseIntake = gamepad2.square;
         boolean shouldTransfer = gamepad2.circle || gamepad1.circle;
+        boolean shouldToggleDebug = gamepad1.optionsWasPressed() || gamepad2.optionsWasPressed();
 
         robot.follower().manual(forward, lateral, turn);
 
@@ -68,15 +65,22 @@ public class SpicyTele extends OpMode {
             robot.transfer().stop();
         }
 
+        if(shouldToggleDebug) showDebugInfo = !showDebugInfo;
+
         // TELEMETRY / LOOP
 
-        telemetry.addLine("Gamepad1 Right Trigger: Shooter (set velocity to 1650 tps)");
-        telemetry.addLine("Gamepad1 Right Bumper: Intake (hold)");
-        telemetry.addLine("Gamepad1 Square: Set Hood Compression for Pollen");
-        telemetry.addLine("Gamepad1 Circle: Set Hood Compression for Nectar");
-        telemetry.addLine(robot.toString());
-        telemetry.addData("Goal Distance", robot.follower().pose().distance(Globals.redBasketAudienceGoal));
-
+        if(showDebugInfo) {
+            telemetry.addLine();
+            telemetry.addLine(robot.toString());
+            telemetry.addData("Goal Distance", robot.follower().pose().distance(Globals.redBasketAudienceGoal));
+        }
+        telemetry.addLine("G1 OR G2 / OPTIONS : " + (showDebugInfo ? "Hide" : "Show") + " Debug Information");
+        telemetry.addLine("G1 OR G2 / RIGHT BUMPER : Intake");
+        telemetry.addLine("G2 / CROSS : Outtake");
+        telemetry.addLine("G1 OR G2 / CIRCLE : Transfer");
+        telemetry.addLine("G2 / SQUARE : Reverse Transfer");
+        telemetry.addLine("G1 OR G2 / RIGHT TRIGGER : Dynamic Shooter Velocity");
+        telemetry.addLine("G1 OR G2 / LEFT TRIGGER : Static Shooter Velocity");
 
         robot.drawRobotOnPanels();
         robot.loop();

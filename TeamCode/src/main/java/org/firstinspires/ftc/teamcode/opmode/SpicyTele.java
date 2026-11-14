@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
+import org.firstinspires.ftc.teamcode.mechanism.Robot;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
@@ -14,18 +15,12 @@ import org.firstinspires.ftc.teamcode.pedro.Drawing;
 
 @TeleOp(name="Powell at League Meet 2: Hola")
 public class SpicyTele extends OpMode {
-    private Follower f;
-    private Intake intake;
-    private Shooter shooter;
-    private Transfer transfer;
+    private Robot robot;
 
     @Override
     public void init() {
-        f = Constants.create(hardwareMap);
-        f.setPose(new Pose(58,10,0));
-        intake = new Intake(hardwareMap, telemetry);
-        shooter = new Shooter(hardwareMap, telemetry);
-        transfer = new Transfer(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry);
+        robot.follower().setPose(new Pose(58,10,0));
 
         telemetry.update();
     }
@@ -34,13 +29,12 @@ public class SpicyTele extends OpMode {
     public void loop() {
         /// DRIVE
 
-        Globals.lastPose = f.pose();
-
         double forward = -gamepad1.left_stick_y;
         double lateral = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
 
-        f.manual(forward,lateral,turn);
+        robot.follower().manual(forward,lateral,turn);
+
         /// CONTROLS
 
         boolean rTriggerPressed = gamepad2.right_trigger > 0.7 || gamepad1.right_trigger > 0.7; // Incase 2 disconnects
@@ -53,27 +47,29 @@ public class SpicyTele extends OpMode {
 
 
         if(lTriggerPressed) {
-            shooter.setVelocity(Shooter.TESTING_SHOOTER_VELO);
+            robot.shooter().setVelocity(Shooter.TESTING_SHOOTER_VELO);
         } else if (rTriggerPressed){
-            shooter.setVelocity(shooter.getVelocityForDist(f.pose().distance(Globals.redBasketAudienceGoal)));
+            robot.shooter().setVelocity(
+                    robot.shooterVelocityFor(Globals.redBasketAudienceGoal)
+            );
         }else {
-            shooter.stop();
+            robot.shooter().stop();
         }
 
         if(shouldIntake) {
-            intake.intake();
+            robot.intake().intake();
         } else if(shouldReverseIntake){
-            intake.outtake();
+            robot.intake().outtake();
         } else {
-            intake.stop();
+            robot.intake().stop();
         }
 
         if(shouldTransfer) {
-            transfer.transfer();
+            robot.transfer().transfer();
         } else if(shouldReverseTransfer) {
-            transfer.outtake();
+            robot.transfer().outtake();
         } else {
-            transfer.stop();
+            robot.transfer().stop();
         }
 
         // TELEMETRY / LOOP
@@ -82,18 +78,12 @@ public class SpicyTele extends OpMode {
         telemetry.addLine("Gamepad1 Right Bumper: Intake (hold)");
         telemetry.addLine("Gamepad1 Square: Set Hood Compression for Pollen");
         telemetry.addLine("Gamepad1 Circle: Set Hood Compression for Nectar");
-        telemetry.addLine(intake.toString());
-        telemetry.addLine(shooter.toString());
-        telemetry.addLine(transfer.toString());
-        telemetry.addData("Pose", f.pose().toString());
-        telemetry.addData("Pose", f.pose().distance(Globals.redBasketAudienceGoal));
+        telemetry.addLine(robot.toString());
+        telemetry.addData("Goal Distance", robot.follower().pose().distance(Globals.redBasketAudienceGoal));
 
 
-        Drawing.drawCurrent(f);
-        intake.loop();
-        shooter.loop();
-        f.update();
-        transfer.loop();
+        robot.drawRobotOnPanels();
+        robot.loop();
         telemetry.update();
     }
 

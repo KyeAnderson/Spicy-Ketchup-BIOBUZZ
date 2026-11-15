@@ -14,8 +14,8 @@ public class Turret extends Mechanism {
     Servo s2;
     public Turret(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
-        s1 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_L.getId());
-        s2 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_R.getId());
+//        s1 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_L.getId());
+//        s2 = hm.get(Servo.class, HardwareConstants.TURRET_SERVO_R.getId());
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
+import org.firstinspires.ftc.teamcode.mechanism.Robot;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -35,12 +36,7 @@ public class AutoUno extends OpMode {
     AutoState state;
 
     PoseFactory p;
-    Follower f;
-    Shooter s;
-    Hood h;
-    Transfer t;
-    Intake i;
-
+    Robot robot;
     Pose start;
     Pose scorePose;
     Pose spikeMark;
@@ -49,33 +45,33 @@ public class AutoUno extends OpMode {
     Pose loadingZone;
     Path startToSpikeMark() {
         return Paths
-                .curve(f.pose(),
+                .curve(robot.currentPose(),
                         p.of(13, 20, 270),
                         spikeMark)
-                .linear(f.pose(), spikeMark);
+                .linear(robot.currentPose(), spikeMark);
     }
     Path pickupFromSpikeMark() {
         return Paths
-                .line(f.pose(), spikeMarkPickup)
-                .linear(f.pose(), spikeMarkPickup)
+                .line(robot.currentPose(), spikeMarkPickup)
+                .linear(robot.currentPose(), spikeMarkPickup)
                 .with(
                     Constants.foresightConfig.maxPathSpeed.at(0.75) // slow it down to pickup
                 );
     }
     Path spikeMarkToScore() {
         return Paths
-                .line(f.pose(), scorePose)
-                .linear(f.pose(), scorePose);
+                .line(robot.currentPose(), scorePose)
+                .linear(robot.currentPose(), scorePose);
     }
     Path startToScore() {
         return Paths
-                .line(f.pose(), scorePose)
-                .linear(f.pose(), scorePose);
+                .line(robot.currentPose(), scorePose)
+                .linear(robot.currentPose(), scorePose);
     }
     Path finalScoreToLoadingZone() {
         return Paths
-                .curve(f.pose(), new Pose(12,62,270), loadingZone)
-                .linear(f.pose(), loadingZone);
+                .curve(robot.currentPose(), new Pose(12,62,270), loadingZone)
+                .linear(robot.currentPose(), loadingZone);
     }
     boolean pickedUpSpikeMark = false;
     boolean flywheelReadyToShoot = false;
@@ -90,18 +86,13 @@ public class AutoUno extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         state = AutoState.BEGIN;
         p = PoseFactory.degrees();
-        f = Constants.create(hardwareMap);
-        h = new Hood(hardwareMap, telemetry);
-        s = new Shooter(hardwareMap, telemetry);
-        t = new Transfer(hardwareMap, telemetry);
-        i = new Intake(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry);
+
         flywheelReadyToShoot = false;
         pickedUpSpikeMark = false;
-        start = p.of(58,10,0); // pods of robot is y = 11.5, x = 1 if at corner (0,0)
-        f.setPose(start);
-        f.update();
 
-        Globals.lastPose = f.pose();
+        start = p.of(58,10,0); // pods of robot is y = 11.5, x = 1 if at corner (0,0)
+
         scorePose = p.of(58,12, 6.7);
 
         spikeMark = p.of(6, 25, 270);
@@ -110,67 +101,72 @@ public class AutoUno extends OpMode {
         scorePostPickup = p.of(58, 125, 180);
         loadingZone = p.of(12, 92, 270);
 
+        robot.follower().setPose(start);
+        robot.follower().update();
+
         telemetryM.update(telemetry);
     }
 
     public void fsmRoutine() {
         switch(state) {
             case BEGIN:
-                f.follow(startToScore());
+                robot.follower().follow(startToScore());
                 setState(AutoState.MOVE_TO_SCORE);
                 break;
             case MOVE_TO_SCORE:
-                h.setupPollen();
-                s.setVelocity(s.getVelocityForDist(f.pose().distance(Globals.redBasketAudienceGoal)));
-                if(!f.isBusy()) {
+                robot.hood().setupPollen();
+                robot.shooter().setVelocity(
+                        robot.shooterVelocityFor(Globals.redBasketAudienceGoal)
+                );
+                if(!robot.follower().isBusy()) {
                     setState(AutoState.BEGIN_SCORING);
                 }
                 break;
             case BEGIN_SCORING:
-                if(s.flywheelAtTarget()) {
+                if(robot.shooter().flywheelAtTarget()) {
                     if(!flywheelReadyToShoot) {
                         flywheelReadyToShoot = true;
                         scoreTimer.reset();
                     }
-                    t.transfer();
+                    robot.transfer().transfer();
                 } else {
-                    t.stop();
+                    robot.transfer().stop();
                 }
-                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= h.getCompression().getTimeToScore() * 4) {
+                if(flywheelReadyToShoot && scoreTimer.get(TimeUnit.MILLISECONDS) >= robot.hood().getCompression().getTimeToScore() * 4) {
                     // If we've scored (3 pollen, estimated score time)
-                    t.stop();
-                    s.stop();
+                    robot.transfer().stop();
+                    robot.shooter().stop();
                     flywheelReadyToShoot = false;
                     if(pickedUpSpikeMark) {
-                        f.follow(finalScoreToLoadingZone());
+                        robot.follower().follow(finalScoreToLoadingZone());
                         setState(AutoState.MOVE_TO_END);
                     } else {
-                        f.follow(startToSpikeMark());
+                        robot.follower().follow(startToSpikeMark());
                         setState(AutoState.MOVE_TO_SPIKE_MARK);
                     }
                 }
                 break;
             case MOVE_TO_SPIKE_MARK:
-                i.slowIntake();
-                if(!f.isBusy()) {
-                    f.follow(pickupFromSpikeMark());
+                robot.intake().slowIntake();
+                if(!robot.follower().isBusy()) {
+                    robot.follower().follow(pickupFromSpikeMark());
                     setState(AutoState.PICKUP_FROM_SPIKE_MARK);
                 }
                 break;
             case PICKUP_FROM_SPIKE_MARK:
-                i.intake();
-                if(!f.isBusy()) {
-                    f.follow(spikeMarkToScore());
+                robot.intake().intake();
+                if(!robot.follower().isBusy()) {
+                    robot.follower().follow(spikeMarkToScore());
                     pickedUpSpikeMark = true;
                     setState(AutoState.MOVE_TO_SCORE);
                 }
                 break;
             case MOVE_TO_END:
                 // Final cleanup
-                i.stop();
-                s.stop();
-                t.stop();
-                if(!f.isBusy()) {
+                robot.intake().stop();
+                robot.shooter().stop();
+                robot.transfer().stop();
+                if(!robot.follower().isBusy()) {
                     setState(AutoState.EXIT_OPMODE);
                 }
                 break;
@@ -185,12 +181,8 @@ public class AutoUno extends OpMode {
         telemetryM.addData("State", state.name());
         telemetryM.addData("Time in current state", stateTimer.get(TimeUnit.MILLISECONDS));
         telemetryM.addData("Score Timer", scoreTimer.get(TimeUnit.MILLISECONDS));
-        telemetryM.addData("Pose", f.pose());
-        telemetryM.addLine(i.toString());
-        telemetryM.addLine(s.toString());
-        telemetryM.addLine(t.toString());
-
-        Drawing.drawCurrent(f);
+        robot.showDebugInfoOn(telemetryM);
+        robot.drawRobotOnPanels();
 
         telemetryM.update(telemetry);
         telemetry.update();
@@ -198,13 +190,9 @@ public class AutoUno extends OpMode {
 
     @Override
     public void loop() {
-        Globals.lastPose = f.pose();
         fsmRoutine();
 
-        f.update();
-        i.loop();
-        s.loop();
-        t.loop();
+        robot.loop();
 
         if(DEBUG_MODE) debugRoutine();
         if(gamepad1.xWasPressed()) DEBUG_MODE = !DEBUG_MODE;

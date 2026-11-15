@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
+import org.firstinspires.ftc.teamcode.mechanism.Robot;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -41,11 +42,7 @@ public class AutoBuilder extends OpMode {
     AutoState state;
 
     PoseFactory p;
-    Follower f;
-    Shooter s;
-    Transfer t;
-    Intake i;
-
+    Robot robot;
     Pose start;
     Pose spikeMark;
     Pose spikeMarkPickup;
@@ -58,7 +55,7 @@ public class AutoBuilder extends OpMode {
       //  return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
     }
     Path moveToScore() {
-        return Paths.line(f.pose(), start).linear(f.pose(), start);
+        return Paths.line(robot.follower().pose(), start).linear(robot.follower().pose(), start);
     }
 
     boolean flywheelReadyToShoot = false;
@@ -71,14 +68,12 @@ public class AutoBuilder extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         state = AutoState.NEXT_COMMAND;
         p = PoseFactory.degrees();
-        f = Constants.create(hardwareMap);
-        s = new Shooter(hardwareMap, telemetry);
-        t = new Transfer(hardwareMap, telemetry);
-        i = new Intake(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry);
+
         flywheelReadyToShoot = false;
         start = p.of(56,9,0);
-        f.setPose(start);
-        f.update();
+        robot.follower().setPose(start);
+        robot.follower().update();
 
         spikeMark = p.of(13, 12, 245);
         spikeMarkPickup = p.of(9, 9, 270);
@@ -132,20 +127,20 @@ public class AutoBuilder extends OpMode {
                 setState(cPath.get(cPathDex));
                 break;
             case GARDEN:
-                f.follow(Paths.line(f.pose(), spikeMark).linear(f.pose(), spikeMark));
-              //  f.follow(Paths.line(f.pose(), spikeMarkPickup).linear(f.pose(), spikeMarkPickup));
+                robot.follower().follow(Paths.line(robot.follower().pose(), spikeMark).linear(robot.follower().pose(), spikeMark));
+              //  robot.follower().follow(Paths.line(robot.follower().pose(), spikeMarkPickup).linear(robot.follower().pose(), spikeMarkPickup));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case RIGHT_SHOOT:
-                f.follow(Paths.line(f.pose(), start).linear(f.pose(), start));
+                robot.follower().follow(Paths.line(robot.follower().pose(), start).linear(robot.follower().pose(), start));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case TEST_POSE:
-                f.follow(Paths.line(f.pose(), testPose).linear(f.pose(), testPose));
+                robot.follower().follow(Paths.line(robot.follower().pose(), testPose).linear(robot.follower().pose(), testPose));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case WAIT_FOR_PATH:
-                if (!f.isBusy()) {
+                if (!robot.follower().isBusy()) {
                     setState(AutoState.NEXT_COMMAND);
                 }
                 break;
@@ -159,17 +154,11 @@ public class AutoBuilder extends OpMode {
         telemetryM.addData("Auto", cPath);
         telemetryM.addData("cpathDex", cPathDex);
         telemetryM.addData("Auto STATE", cPath.get(cPathDex).name());
-        telemetryM.addLine(f.toString());
-        telemetryM.addLine(i.toString());
-        telemetryM.addLine(s.toString());
-        telemetryM.addLine(t.toString());
+        robot.showDebugInfoOn(telemetryM);
         fsmRoutine();
 
 
-        f.update();
-        i.loop();
-        s.loop();
-        t.loop();
+        robot.loop();
 
         telemetryM.update(telemetry);
         telemetry.update();

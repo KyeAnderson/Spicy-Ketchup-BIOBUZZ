@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mechanism;
 
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -49,6 +50,15 @@ public class Robot extends Mechanism {
     }
     public void drawRobotOnPanels() {
         Drawing.drawCurrent(follower);
+    }
+    public void showDebugInfoOnPanels() {
+        showDebugInfoOn(PanelsTelemetry.INSTANCE.getTelemetry());
+    }
+    public void showDebugInfoOn(Telemetry telemetry) {
+        telemetry.addLine(toString());
+    }
+    public void showDebugInfoOn(TelemetryManager telemetryM) {
+        telemetryM.getLines().addAll(toStrings());
     }
 
     @Override

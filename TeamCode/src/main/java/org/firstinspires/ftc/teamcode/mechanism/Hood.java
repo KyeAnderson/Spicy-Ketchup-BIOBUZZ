@@ -35,8 +35,8 @@ public class Hood extends Mechanism{
         super(hm, tele);
         compressor = hm.get(Servo.class, HardwareConstants.SHOOTER_COMPRESSION_SERVO.getId());
         setpointCompression = HoodCompression.POLLEN;
-        displayTelemetry("Hood Compression", ()-> setpointCompression);
-        displayTelemetry("Hood Angle", compressor::getPosition);
+        displayTelemetry("Compression", ()-> setpointCompression);
+        displayTelemetry("Angle", compressor::getPosition);
     }
 
     public void setupNectar() {

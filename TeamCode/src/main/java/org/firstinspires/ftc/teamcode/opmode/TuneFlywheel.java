@@ -11,16 +11,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
+import org.firstinspires.ftc.teamcode.mechanism.Robot;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @TeleOp(name = "Flywheel Tuner")
 public class TuneFlywheel extends OpMode {
-    private Follower f;
-    private Intake intake;
-    private Shooter shooter;
-    private Transfer transfer;
+    private Robot robot;
     TelemetryManager telemetryM;
     ArraySet<double[]> doubleList;
 
@@ -32,11 +30,8 @@ public class TuneFlywheel extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         doubleList = new ArraySet<>();
 
-        f = Constants.create(hardwareMap);
-        f.setPose(new Pose(58, 10, Math.toRadians(0)));
-        intake = new Intake(hardwareMap, telemetry);
-        shooter = new Shooter(hardwareMap, telemetry);
-        transfer = new Transfer(hardwareMap, telemetry);
+        robot = new Robot(hardwareMap, telemetry);
+        robot.follower().setPose(new Pose(58, 10, Math.toRadians(0)));
 
         telemetryM.update(telemetry);
     }
@@ -46,13 +41,13 @@ public class TuneFlywheel extends OpMode {
     public void loop() {
         /// DRIVE
 
-        Globals.lastPose = f.pose();
+        Globals.lastPose = robot.follower().pose();
 
         double forward = -gamepad1.left_stick_y;
         double lateral = -gamepad1.left_stick_x;
         double turn = -gamepad1.right_stick_x;
 
-        f.manual(forward,lateral,turn);
+        robot.follower().manual(forward,lateral,turn);
 
         /// CONTROLS
 
@@ -61,20 +56,20 @@ public class TuneFlywheel extends OpMode {
         boolean shouldIntake = shoulderPressed && !triggerPressed;
 
         if(triggerPressed) {
-            if(shooter.flywheelAtTarget()) transfer.transfer();
-            else transfer.stop();
+            if(robot.shooter().flywheelAtTarget()) robot.transfer().transfer();
+            else robot.transfer().stop();
         } else {
-            transfer.stop();
+            robot.transfer().stop();
         }
 
         if(shouldIntake) {
-            intake.intake();
-            transfer.runFrontOnly();
+            robot.intake().intake();
+            robot.transfer().runFrontOnly();
         } else if(gamepad1.left_bumper) {
-            transfer.outtake();
+            robot.transfer().outtake();
         } else {
-            intake.stop();
-            if(!triggerPressed) transfer.stop();
+            robot.intake().stop();
+            if(!triggerPressed) robot.transfer().stop();
         }
 
 
@@ -92,16 +87,16 @@ public class TuneFlywheel extends OpMode {
         }
 
         if(gamepad1.crossWasPressed()) {
-            doubleList.add(new double[] {Globals.redBasketAudienceGoal.distance(f.pose()), rpm});
+            doubleList.add(new double[] {Globals.redBasketAudienceGoal.distance(robot.currentPose()), rpm});
         }
-        shooter.setVelocity(rpm);
+        robot.shooter().setVelocity(rpm);
 
         // TELEMETRY / LOOP
 
         telemetryM.addData("Edit Size", add);
-        telemetryM.addData("Distance to goal", f.pose().distance(Globals.redBasketAudienceGoal));
+        telemetryM.addData("Distance to goal", robot.currentPose().distance(Globals.redBasketAudienceGoal));
         telemetryM.addData("Velocity", rpm);
-        telemetryM.addData("Current Shooter Velocity", shooter.getVelocity());
+        telemetryM.addData("Current Shooter Velocity", robot.shooter().getVelocity());
         telemetryM.addLine("G1 Dpad LEFT : -50tps from edit size");
         telemetryM.addLine("G1 Dpad RIGHT : +50tps from edit size");
         telemetryM.addLine("G1 Dpad UP : +" + add+"tps");
@@ -109,14 +104,9 @@ public class TuneFlywheel extends OpMode {
         for(double[] i : doubleList) {
             telemetryM.addLine("{" + i[0] + ", " + i[1]+"},");
         }
-        telemetryM.addLine(intake.toString());
-        telemetryM.addLine(shooter.toString());
-        telemetryM.addLine(transfer.toString());
 
-        intake.loop();
-        shooter.loop();
-        f.update();
-        transfer.loop();
+        robot.loop();
+        robot.showDebugInfoOn(telemetryM);
         telemetryM.update(telemetry);
     }
 }

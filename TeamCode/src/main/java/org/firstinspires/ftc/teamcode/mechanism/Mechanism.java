@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -29,7 +31,7 @@ public abstract class Mechanism {
 
     public void displayTelemetry(String identifier, Mechanism linkedMechanism) {
         for(Map.Entry<String, Supplier<String>> linkedEntry : linkedMechanism.selfTelemetry.entrySet()) {
-            selfTelemetry.put(identifier + " " + linkedEntry.getKey(), () -> String.valueOf(linkedEntry.getValue()));
+            selfTelemetry.put(identifier + " " + linkedEntry.getKey(), ()->linkedEntry.getValue().get());
         }
     }
 
@@ -65,6 +67,17 @@ public abstract class Mechanism {
 
     public abstract void loop();
     public abstract void test(Gamepad g1, Gamepad g2, TelemetryManager telemetryM, Follower follower);
+
+    public ArrayList<String> toStrings() {
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add(getClass().getSimpleName() + " >\n");
+        for(Map.Entry<String, Supplier<String>> entry : selfTelemetry.entrySet()) {
+            strings.add(
+                    " ] " + entry.getKey() + ": " + entry.getValue().get()
+            );
+        }
+        return strings;
+    }
 
     @NonNull
     public String toString() {

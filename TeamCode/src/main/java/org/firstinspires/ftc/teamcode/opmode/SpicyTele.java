@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,14 +13,16 @@ import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 @TeleOp(name="Powell at League Meet 2: Hola")
 public class SpicyTele extends OpMode {
     private Robot robot;
-    private boolean showDebugInfo = false;
+    private boolean showDebugInfo = true;
+    private TelemetryManager telemetryM;
 
     @Override
     public void init() {
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         robot = new Robot(hardwareMap, telemetry);
         robot.follower().setPose(new Pose(58,10,0));
 
-        telemetry.update();
+        telemetryM.update(telemetry);
     }
 
     @Override
@@ -67,24 +71,24 @@ public class SpicyTele extends OpMode {
 
         if(shouldToggleDebug) showDebugInfo = !showDebugInfo;
 
-        // TELEMETRY / LOOP
+        // telemetryM / LOOP
 
         if(showDebugInfo) {
-            telemetry.addLine();
-            telemetry.addLine(robot.toString());
-            telemetry.addData("Goal Distance", robot.follower().pose().distance(Globals.redBasketAudienceGoal));
+            robot.showDebugInfoOn(telemetryM);
+            telemetryM.addData("Goal Distance", robot.currentPose().distance(Globals.redBasketAudienceGoal));
+            telemetryM.addLine("");
         }
-        telemetry.addLine("G1 OR G2 / OPTIONS : " + (showDebugInfo ? "Hide" : "Show") + " Debug Information");
-        telemetry.addLine("G1 OR G2 / RIGHT BUMPER : Intake");
-        telemetry.addLine("G2 / CROSS : Outtake");
-        telemetry.addLine("G1 OR G2 / CIRCLE : Transfer");
-        telemetry.addLine("G2 / SQUARE : Reverse Transfer");
-        telemetry.addLine("G1 OR G2 / RIGHT TRIGGER : Dynamic Shooter Velocity");
-        telemetry.addLine("G1 OR G2 / LEFT TRIGGER : Static Shooter Velocity");
+        telemetryM.addLine("G1 OR G2 / OPTIONS : " + (showDebugInfo ? "Hide" : "Show") + " Debug Information");
+        telemetryM.addLine("G1 OR G2 / RIGHT BUMPER : Intake");
+        telemetryM.addLine("G2 / CROSS : Outtake");
+        telemetryM.addLine("G1 OR G2 / CIRCLE : Transfer");
+        telemetryM.addLine("G2 / SQUARE : Reverse Transfer");
+        telemetryM.addLine("G1 OR G2 / RIGHT TRIGGER : Dynamic Shooter Velocity");
+        telemetryM.addLine("G1 OR G2 / LEFT TRIGGER : Static Shooter Velocity");
 
         robot.drawRobotOnPanels();
         robot.loop();
-        telemetry.update();
+        telemetryM.update(telemetry);
     }
 
 }

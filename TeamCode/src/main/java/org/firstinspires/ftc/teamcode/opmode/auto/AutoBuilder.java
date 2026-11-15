@@ -55,7 +55,7 @@ public class AutoBuilder extends OpMode {
       //  return Paths.line(spikeMark, spikeMarkPickup).linear(spikeMark, spikeMarkPickup);
     }
     Path moveToScore() {
-        return Paths.line(robot.follower().pose(), start).linear(robot.follower().pose(), start);
+        return Paths.line(robot.currentPose(), start).linear(robot.currentPose(), start);
     }
 
     boolean flywheelReadyToShoot = false;
@@ -127,16 +127,16 @@ public class AutoBuilder extends OpMode {
                 setState(cPath.get(cPathDex));
                 break;
             case GARDEN:
-                robot.follower().follow(Paths.line(robot.follower().pose(), spikeMark).linear(robot.follower().pose(), spikeMark));
-              //  robot.follower().follow(Paths.line(robot.follower().pose(), spikeMarkPickup).linear(robot.follower().pose(), spikeMarkPickup));
+                robot.follower().follow(Paths.line(robot.currentPose(), spikeMark).linear(robot.currentPose(), spikeMark));
+              //  robot.follower().follow(Paths.line(robot.currentPose(), spikeMarkPickup).linear(robot.currentPose(), spikeMarkPickup));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case RIGHT_SHOOT:
-                robot.follower().follow(Paths.line(robot.follower().pose(), start).linear(robot.follower().pose(), start));
+                robot.follower().follow(Paths.line(robot.currentPose(), start).linear(robot.currentPose(), start));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case TEST_POSE:
-                robot.follower().follow(Paths.line(robot.follower().pose(), testPose).linear(robot.follower().pose(), testPose));
+                robot.follower().follow(Paths.line(robot.currentPose(), testPose).linear(robot.currentPose(), testPose));
                 setState(AutoState.WAIT_FOR_PATH);
                 break;
             case WAIT_FOR_PATH:

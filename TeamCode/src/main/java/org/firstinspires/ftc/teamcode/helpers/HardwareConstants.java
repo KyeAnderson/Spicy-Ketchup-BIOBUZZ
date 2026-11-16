@@ -4,6 +4,7 @@ public enum HardwareConstants {
     INTAKE_MOTOR("spin"),
     TRANSFER_MOTOR("tf"),
     TRANSFER_SERVO("ts"),
+    TURRET_MOTOR("tm"),
     TURRET_SERVO_L("ts1"),
     TURRET_SERVO_R("ts2"),
     SHOOTER_FLYWHEEL_MOTOR("fly"),

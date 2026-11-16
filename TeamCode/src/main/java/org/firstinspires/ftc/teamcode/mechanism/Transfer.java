@@ -38,16 +38,19 @@ public class Transfer extends Mechanism {
     TransferVelocity setpointVelocity;
     DcMotorEx motor;
     CRServo servo;
+    double toRPM(double tps) {
+        double ENCODER_PPR = 145.1; // https://www.gobilda.com/5203-series-yellow-jacket-planetary-gear-motor-5-2-1-ratio-24mm-length-8mm-rex-shaft-1150-rpm-3-3-5v-encoder
+        return ((tps/ ENCODER_PPR) * 60);
+    }
     public Transfer(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
         motor = hm.get(DcMotorEx.class, HardwareConstants.TRANSFER_MOTOR.getId());
-        servo = hm.get(CRServoImpl.class, HardwareConstants.TRANSFER_SERVO.getId());
+        servo = hm.get(CRServo.class, HardwareConstants.TRANSFER_SERVO.getId());
         setpointVelocity = TransferVelocity.OFF;
-        displayTelemetry("Target Mode", () -> setpointVelocity.name());
-        displayTelemetry("Current Velocity", motor::getVelocity);
+        displayTelemetry("RPM", ()->toRPM(motor.getVelocity()));
+        displayTelemetry("Target RPM", ()-> toRPM(setpointVelocity.getMotorVelocity()));
         displayTelemetry("Current Servo Power", servo::getPower);
-        displayTelemetry("Setpoint Velocity", ()-> setpointVelocity.getMotorVelocity());
-        displayTelemetry("Setpoint Servo Power", ()-> setpointVelocity.getServoPower());
+        displayTelemetry("Target Servo Power", setpointVelocity::getServoPower);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         initializeMotors(motor);
     }

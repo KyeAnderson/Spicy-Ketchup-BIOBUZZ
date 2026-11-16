@@ -19,7 +19,6 @@ import java.util.Comparator;
 public class Shooter extends Mechanism {
     public static final int TESTING_SHOOTER_VELO = 2140;
     DcMotorEx flywheel;
-
     double setpointVelocity;
 
     // TODO: retune with new shooter
@@ -34,6 +33,10 @@ public class Shooter extends Mechanism {
     };
     InterpLUT distanceVelocityLUT;
 
+    double toRPM(double tps) {
+        double ENCODER_PPR = 28.0; // https://www.gobilda.com/5203-series-yellow-jacket-motor-1-1-ratio-24mm-length-8mm-rex-shaft-6000-rpm-3-3-5v-encoder/
+        return ((tps/ ENCODER_PPR) * 60);
+    }
     public Shooter(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
         setupLUT();
@@ -44,8 +47,9 @@ public class Shooter extends Mechanism {
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        displayTelemetry("Setpoint Velocity", ()->setpointVelocity);
-        displayTelemetry("Current Velocity", flywheel::getVelocity);
+        displayTelemetry("TPS", flywheel::getVelocity);
+        displayTelemetry("Target RPM", ()->toRPM(setpointVelocity));
+        displayTelemetry("RPM", ()->toRPM(flywheel.getVelocity()));
     }
 
     void setupLUT() {

@@ -17,7 +17,8 @@ public class Transfer extends Mechanism {
         OFF(0, 0),
         FRONT_ON(1500, 0),
         OUTTAKE(-1500, -1),
-        ON(1500, 1);
+//        ON(1500, 1);
+        ON(750, 1);
         final int motorVelocity;
         final double servoPower;
         TransferVelocity(int i, double c) {

@@ -73,6 +73,10 @@ public class SpicyTele extends OpMode {
 
         // telemetryM / LOOP
 
+        if(gamepad1.touchpadWasPressed()) {
+            telemetry.speak("They call me lord verity");
+        }
+
         if(showDebugInfo) {
             robot.showDebugInfoOn(telemetryM);
             telemetryM.addData("Goal Distance", robot.currentPose().distance(Globals.redBasketAudienceGoal));

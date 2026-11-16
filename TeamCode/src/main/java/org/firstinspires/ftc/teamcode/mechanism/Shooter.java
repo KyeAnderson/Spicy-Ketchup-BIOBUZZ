@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Shooter extends Mechanism {
-    public static final int TESTING_SHOOTER_VELO = 2145;
+    public static final int TESTING_SHOOTER_VELO = 2140;
     DcMotorEx flywheel;
 
     double setpointVelocity;
@@ -112,8 +112,15 @@ public class Shooter extends Mechanism {
         if(g1.dpadDownWasPressed()) {
             testVelocity -= 5;
         }
+        if(g1.cross) {
+            flywheel.setPower(1);
+        } else {
 
         setVelocity(testVelocity);
+        }
+
+        telemetryM.addLine("Currently using " + (g1.cross ? "MAX POWER" : "Velocity"));
+        telemetryM.addLine("G1 / CROSS (HOLD) : Maximum power (1.0)");
         telemetryM.addLine("G1 / DPAD UP : add 5 to testVelocity");
         telemetryM.addLine("G1 / DPAD UP : subtract 5 from testVelocity");
         telemetryM.addData("testVelocity", testVelocity);

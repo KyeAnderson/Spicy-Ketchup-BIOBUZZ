@@ -5,8 +5,6 @@ import com.bylazar.field.PanelsField;
 import com.bylazar.field.Style;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
-import com.pedropathing.math.Vector;
-import com.pedropathing.paths.Path;
 
 /** * This is the Drawing class. It handles the drawing of stuff on Panels Dashboard, like the robot.
  *

@@ -5,6 +5,7 @@
             <goBILDA5202SeriesMotor name="fly" port="0" />
             <goBILDA5202SeriesMotor name="tf" port="1" />
             <goBILDA5202SeriesMotor name="spin" port="2" />
+            <goBILDA5202SeriesMotor name="tm" port="3" />
             <Servo name="ang" port="0" />
             <ContinuousRotationServo name="ts" port="1" />
         </LynxModule>

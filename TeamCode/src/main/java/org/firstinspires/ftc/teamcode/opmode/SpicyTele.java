@@ -40,8 +40,13 @@ public class SpicyTele extends OpMode {
         boolean shouldReverseIntake = gamepad2.square;
         boolean shouldTransfer = gamepad2.circle || gamepad1.circle;
         boolean shouldToggleDebug = gamepad1.optionsWasPressed() || gamepad2.optionsWasPressed();
+        boolean shouldRetractFlowermabob = gamepad1.dpadUpWasPressed();
+        boolean shouldExtendFlowermabob = gamepad1.dpadDownWasPressed();
 
         robot.follower().manual(forward, lateral, turn);
+
+        if(shouldExtendFlowermabob) robot.flowermabob().extend();
+        else if(shouldRetractFlowermabob) robot.flowermabob().retract();
 
         if(shouldStaticVelocity) {
             robot.shooter().setVelocity(Shooter.TESTING_SHOOTER_VELO);

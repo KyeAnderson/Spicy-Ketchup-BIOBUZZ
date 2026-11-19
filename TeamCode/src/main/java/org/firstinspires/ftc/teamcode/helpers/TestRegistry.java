@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.mechanism.Flowermabob;
 import org.firstinspires.ftc.teamcode.mechanism.Hood;
 import org.firstinspires.ftc.teamcode.mechanism.Intake;
 import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
@@ -75,7 +76,8 @@ public class TestRegistry {
                     new GenericTest(Shooter.class),
                     new GenericTest(Transfer.class),
                     new GenericTest(Hood.class),
-                    new GenericTest(Turret.class)
+                    new GenericTest(Turret.class),
+                    new GenericTest(Flowermabob.class)
             };
 
             for (GenericTest mode : modes) {

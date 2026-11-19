@@ -10,9 +10,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Turret extends Mechanism {
+    private final double LEFT_LIMIT = 260; // -90deg, -pi/2, etc
+    private final double RIGHT_LIMIT = -260; // 90deg, pi/2, etc
     public static double p = 0.012, i = 0, d = 0.0004, f = 0; // Untuned but worked well
     public final double ticks_in_degrees = (751.8 * 2.75) / 360.0;
     double target;
@@ -30,6 +33,8 @@ public class Turret extends Mechanism {
         
         target = 0;
         controller.setPID(p, i, d);
+        displayTelemetry("Target", ()->target);
+        displayTelemetry("Current", tm::getCurrentPosition);
     }
 
     @Override
@@ -48,6 +53,9 @@ public class Turret extends Mechanism {
         setPower(turretPower);
     }
 
+    public void setTargetAngle(double ang) {
+        setTarget(Globals.map(ang, -90, 90, LEFT_LIMIT, RIGHT_LIMIT));
+    }
     private void setTarget(double target){
         this.target = target;
     }
@@ -62,7 +70,10 @@ public class Turret extends Mechanism {
     }
 
 
+
     double testPos = 0;
+    int ci = 0;
+    double[] angles = {-90, -45, -35, -15, 0, 15, 35, 45, 90};
     @Override
     public void test(Gamepad g1, Gamepad g2, TelemetryManager telemetryM, Follower follower) {
         if(g1.dpadUpWasPressed()) {
@@ -73,6 +84,13 @@ public class Turret extends Mechanism {
         }
         if (g1.circleWasPressed()){
             setTarget(testPos);
+        }
+        if(g1.crossWasPressed()) {
+            if(ci >= angles.length) ci = 0;
+            setTargetAngle(angles[ci++]);
+        }
+        if(g1.triangle) {
+            setTarget(Globals.map(g1.right_stick_x, -1, 1, LEFT_LIMIT, RIGHT_LIMIT));
         }
 
         telemetryM.addLine("Currently using " + (g1.cross ? "MAX POWER" : "Velocity"));

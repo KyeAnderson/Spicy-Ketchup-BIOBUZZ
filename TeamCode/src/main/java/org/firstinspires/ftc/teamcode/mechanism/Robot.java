@@ -19,6 +19,7 @@ public class Robot extends Mechanism {
     private final Intake intake;
     private final Shooter shooter;
     private final Transfer transfer;
+    private final Flowermabob flowermabob;
     private final Hood hood;
     private final Turret turret;
     public Robot(HardwareMap hm, Telemetry tele) {
@@ -29,12 +30,14 @@ public class Robot extends Mechanism {
         transfer = new Transfer(hm, tele);
         hood = new Hood(hm, tele);
         turret = new Turret(hm, tele);
+        flowermabob = new Flowermabob(hm, tele);
         displayTelemetry("Current Pose", follower::pose);
         displayTelemetry("Intake", intake);
         displayTelemetry("Shooter", shooter);
         displayTelemetry("Transfer", transfer);
         displayTelemetry("Hood", hood);
         displayTelemetry("Turret", turret);
+        displayTelemetry("Flowermabob", flowermabob);
     }
 
     public Follower follower() {return follower;}
@@ -43,6 +46,7 @@ public class Robot extends Mechanism {
     public Transfer transfer() {return transfer;}
     public Hood hood() {return hood;}
     public Turret turret() {return turret;}
+    public Flowermabob flowermabob() {return flowermabob;}
     public Pose currentPose() {return follower.pose();}
 
     public double shooterVelocityFor(Pose target) {
@@ -71,6 +75,7 @@ public class Robot extends Mechanism {
         transfer.loop();
         hood.loop();
         turret.loop();
+        flowermabob.loop();
     }
 
     @Override

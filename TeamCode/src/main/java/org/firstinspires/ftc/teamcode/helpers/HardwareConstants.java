@@ -5,8 +5,8 @@ public enum HardwareConstants {
     TRANSFER_MOTOR("tf"),
     TRANSFER_SERVO("ts"),
     TURRET_MOTOR("tm"),
-    TURRET_SERVO_L("ts1"),
-    TURRET_SERVO_R("ts2"),
+    FLOWER_SERVO_L("fs1"),
+    FLOWER_SERVO_R("fs2"),
     SHOOTER_FLYWHEEL_MOTOR("fly"),
     SHOOTER_COMPRESSION_SERVO("ang"),
 

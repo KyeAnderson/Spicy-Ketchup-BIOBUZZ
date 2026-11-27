@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Flowermabob extends Mechanism {
+    private Robot robot;
     public enum FlowermabobMode {
         RETRACT(0.41),
         EXTEND(0.20);
@@ -27,8 +28,9 @@ public class Flowermabob extends Mechanism {
     Servo servoRight;
     FlowermabobMode mode;
 
-    public Flowermabob(HardwareMap hm, Telemetry tele) {
+    public Flowermabob(HardwareMap hm, Telemetry tele, Robot robot) {
         super(hm, tele);
+        this.robot = robot;
         servoLeft = hm.get(Servo.class, HardwareConstants.FLOWER_SERVO_L.getId());
         servoRight = hm.get(Servo.class, HardwareConstants.FLOWER_SERVO_R.getId());
         servoLeft.setDirection(Servo.Direction.REVERSE);

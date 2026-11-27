@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Hood extends Mechanism{
+    private Robot robot;
     public enum HoodCompression  {
         POLLEN(0.6, 2400), // Changed from 1200 -> 2400. Only 2 pollen would shoot
         NECTAR(0.45, 2400);// Changed from 1200 -> 2400. Only 2 pollen would shoot
@@ -31,8 +32,9 @@ public class Hood extends Mechanism{
 
     Servo compressor;
     HoodCompression setpointCompression;
-    public Hood(HardwareMap hm, Telemetry tele) {
+    public Hood(HardwareMap hm, Telemetry tele, Robot robot) {
         super(hm, tele);
+        this.robot = robot;
         compressor = hm.get(Servo.class, HardwareConstants.SHOOTER_COMPRESSION_SERVO.getId());
         setpointCompression = HoodCompression.POLLEN;
         displayTelemetry("Compression", ()-> setpointCompression);

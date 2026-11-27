@@ -25,12 +25,12 @@ public class Robot extends Mechanism {
     public Robot(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
         follower = Constants.create(hardwareMap);
-        intake = new Intake(hm, tele);
-        shooter = new Shooter(hm, tele);
-        transfer = new Transfer(hm, tele);
-        hood = new Hood(hm, tele);
-        turret = new Turret(hm, tele);
-        flowermabob = new Flowermabob(hm, tele);
+        intake = new Intake(hm, tele, this);
+        shooter = new Shooter(hm, tele, this);
+        transfer = new Transfer(hm, tele, this);
+        hood = new Hood(hm, tele, this);
+        turret = new Turret(hm, tele, this);
+        flowermabob = new Flowermabob(hm, tele, this);
         displayTelemetry("Current Pose", follower::pose);
         displayTelemetry("Intake", intake);
         displayTelemetry("Shooter", shooter);

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Intake extends Mechanism {
+    private Robot robot;
     public enum IntakeVelocity {
         OFF(0),
         INTAKE(5000),
@@ -33,8 +34,9 @@ public class Intake extends Mechanism {
         double ENCODER_PPR = 145.1; // https://www.gobilda.com/5203-series-yellow-jacket-planetary-gear-motor-5-2-1-ratio-24mm-length-8mm-rex-shaft-1150-rpm-3-3-5v-encoder/
         return ((tps/ ENCODER_PPR) * 60);
     }
-    public Intake(HardwareMap hm, Telemetry tele) {
+    public Intake(HardwareMap hm, Telemetry tele, Robot robot) {
         super(hm, tele);
+        this.robot = robot;
         motor = hm.get(DcMotorEx.class, HardwareConstants.INTAKE_MOTOR.getId());
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
         displayTelemetry("TPS", motor::getVelocity);

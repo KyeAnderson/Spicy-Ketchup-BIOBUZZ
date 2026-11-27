@@ -14,15 +14,26 @@ import org.firstinspires.ftc.teamcode.helpers.Globals;
 import org.firstinspires.ftc.teamcode.helpers.HardwareConstants;
 
 public class Turret extends Mechanism {
+    private Robot robot;
     private final double LEFT_LIMIT = 260; // -90deg, -pi/2, etc
     private final double RIGHT_LIMIT = -260; // 90deg, pi/2, etc
     public static double p = 0.012, i = 0, d = 0.0004, f = 0; // Untuned but worked well
     public final double ticks_in_degrees = (751.8 * 2.75) / 360.0;
     double target;
+    boolean active;
     DcMotorEx tm;
     public PIDController controller;
-    public Turret(HardwareMap hm, Telemetry tele) {
+
+    enum hiveTarget {
+        LEFT,
+        RIGHT,
+        ZERO  // Zero means just stay forward / Position 0;
+    }
+
+    hiveTarget hive;
+    public Turret(HardwareMap hm, Telemetry tele, Robot robot) {
         super(hm, tele);
+        this.robot = robot;
         tm = hm.get(DcMotorEx.class, HardwareConstants.TURRET_MOTOR.getId());
         tm.setDirection(DcMotor.Direction.FORWARD);
         tm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -32,25 +43,60 @@ public class Turret extends Mechanism {
         controller = new PIDController(p, i, d);
         
         target = 0;
+        active = true;
+
         controller.setPID(p, i, d);
+
+        hive = hiveTarget.ZERO;
+
         displayTelemetry("Target", ()->target);
         displayTelemetry("Current", tm::getCurrentPosition);
     }
 
     @Override
     public void loop() {
-    //   calcPosForRightHive();
-    //   calcPosForLeftHive();
+        switch (hive){
+            case ZERO:
+                target = 0;
+                break;
+            case LEFT:
+                target = calcPosForLeftHive();
+                break;
+            case RIGHT:
+                target = calcPosForRightHive();
+        }
 
-        int turretPos = tm.getCurrentPosition();
-
-        double turretPID = controller.calculate(turretPos, target);
-
-        double ff = Math.cos(Math.toRadians(target / this.ticks_in_degrees)) * f;
-
-        double turretPower = turretPID + ff;
-
-        setPower(turretPower);
+        if (active && inTrackingRange()) {
+            tm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            int turretPos = tm.getCurrentPosition();
+            double turretPID = controller.calculate(turretPos, target);
+            double ff = Math.cos(Math.toRadians(target / this.ticks_in_degrees)) * f;
+            double turretPower = turretPID + ff;
+            setPower(turretPower);
+        } else {
+            tm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            setPower(0);
+        }
+    }
+    public void stopTurret() {
+        active = false;
+    }
+    public void startTurret() {
+        active = true;
+    }
+    public void targetLeftHive(){
+        hive = hiveTarget.LEFT;
+    }
+    public void targetRightHive(){
+        hive = hiveTarget.RIGHT;
+    }
+    public void targetZero(){
+        hive = hiveTarget.ZERO;
+    }
+    public boolean inTrackingRange() {
+        double tolerance = 1000;
+        return Math.abs(robot.shooter().getSetpointVelocity() - robot.shooter().getVelocity()) <= tolerance;
+        // Check if Tick Velocity is within tolerance to start tracking. If not, the turret is deactivated to conserve power
     }
 
     public void setTargetAngle(double ang) {
@@ -62,13 +108,18 @@ public class Turret extends Mechanism {
     private void setPower(double turretPower){
         tm.setPower(turretPower);
     }
-    private void calcPosForRightHive() {
-    //    target = 0;
+    private double calcPosForRightHive() { // Comments are just placeholders to represent logic
+        // if (!limelight.isNull())
+        // return limelight.posToHive()
+        // else return lozalizer.posToHive()
+        return 0;
     }
-    private void calcPosForLeftHive() {
-    //    target = 0;
+    private double calcPosForLeftHive() {
+        // if (!limelight.isNull())
+        // return limelight.posToHive()
+        // else return lozalizer.posToHive()
+        return 0;
     }
-
 
 
     double testPos = 0;

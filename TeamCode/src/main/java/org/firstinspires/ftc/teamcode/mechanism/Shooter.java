@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class Shooter extends Mechanism {
+    private Robot robot;
     public static final int TESTING_SHOOTER_VELO = 2140;
     DcMotorEx flywheel;
     double setpointVelocity;
@@ -37,8 +38,9 @@ public class Shooter extends Mechanism {
         double ENCODER_PPR = 28.0; // https://www.gobilda.com/5203-series-yellow-jacket-motor-1-1-ratio-24mm-length-8mm-rex-shaft-6000-rpm-3-3-5v-encoder/
         return ((tps/ ENCODER_PPR) * 60);
     }
-    public Shooter(HardwareMap hm, Telemetry tele) {
+    public Shooter(HardwareMap hm, Telemetry tele, Robot robot) {
         super(hm, tele);
+        this.robot = robot;
         setupLUT();
 
         flywheel = hm.get(DcMotorEx.class, HardwareConstants.SHOOTER_FLYWHEEL_MOTOR.getId());
@@ -88,6 +90,9 @@ public class Shooter extends Mechanism {
     public void setVelocity(double v) {
         if(setpointVelocity == v) return;
         setpointVelocity = v;
+    }
+    public double getSetpointVelocity(){
+        return setpointVelocity;
     }
 
     public boolean flywheelAtTarget() {

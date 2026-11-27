@@ -9,8 +9,8 @@ public enum HardwareConstants {
     FLOWER_SERVO_R("fs2"),
     SHOOTER_FLYWHEEL_MOTOR("fly"),
     SHOOTER_COMPRESSION_SERVO("ang"),
-
-    TEST_MOTOR("mtr");
+    LIMELIGHT("limelight");
+    //TEST_MOTOR("mtr");
 
     private final String id;
     HardwareConstants(String id) {

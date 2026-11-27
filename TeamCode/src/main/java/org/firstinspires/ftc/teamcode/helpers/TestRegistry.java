@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanism.Shooter;
 import org.firstinspires.ftc.teamcode.mechanism.Transfer;
 import org.firstinspires.ftc.teamcode.mechanism.Turret;
+import org.firstinspires.ftc.teamcode.mechanism.Vision;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -77,7 +78,8 @@ public class TestRegistry {
                     new GenericTest(Transfer.class),
                     new GenericTest(Hood.class),
                     new GenericTest(Turret.class),
-                    new GenericTest(Flowermabob.class)
+                    new GenericTest(Flowermabob.class),
+                    new GenericTest(Vision.class)
             };
 
             for (GenericTest mode : modes) {

@@ -22,9 +22,11 @@ public class Robot extends Mechanism {
     private final Flowermabob flowermabob;
     private final Hood hood;
     private final Turret turret;
+    private final Vision vision;
     public Robot(HardwareMap hm, Telemetry tele) {
         super(hm, tele);
         follower = Constants.create(hardwareMap);
+        vision = new Vision(hm, tele, this);
         intake = new Intake(hm, tele, this);
         shooter = new Shooter(hm, tele, this);
         transfer = new Transfer(hm, tele, this);
@@ -32,6 +34,7 @@ public class Robot extends Mechanism {
         turret = new Turret(hm, tele, this);
         flowermabob = new Flowermabob(hm, tele, this);
         displayTelemetry("Current Pose", follower::pose);
+        displayTelemetry("Vision", vision);
         displayTelemetry("Intake", intake);
         displayTelemetry("Shooter", shooter);
         displayTelemetry("Transfer", transfer);
@@ -70,6 +73,7 @@ public class Robot extends Mechanism {
         Globals.lastPose = currentPose();
 
         follower.update();
+        vision.loop();
         intake.loop();
         shooter.loop();
         transfer.loop();

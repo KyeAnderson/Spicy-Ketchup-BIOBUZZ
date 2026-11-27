@@ -24,9 +24,10 @@ public class Vision extends Mechanism {
     private int tagsUsed = 0;
     private final int[] ids = new int[16];
     private final double[] txs = new double[16];
-
-    public Vision(HardwareMap hm, Telemetry tele){
+    private Robot robot;
+    public Vision(HardwareMap hm, Telemetry tele, Robot robot){
         super(hm, tele);
+        this.robot = robot;
         limelight = hm.tryGet(Limelight3A.class, HardwareConstants.LIMELIGHT.getId());
         if(limelight!=null) {
             limelight.setPollRateHz(100);

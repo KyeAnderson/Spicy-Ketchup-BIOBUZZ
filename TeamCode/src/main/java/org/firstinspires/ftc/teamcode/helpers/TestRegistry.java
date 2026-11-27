@@ -1,0 +1,90 @@
+package org.firstinspires.ftc.teamcode.helpers;
+
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.mechanism.Flowermabob;
+import org.firstinspires.ftc.teamcode.mechanism.Hood;
+import org.firstinspires.ftc.teamcode.mechanism.Intake;
+import org.firstinspires.ftc.teamcode.mechanism.Mechanism;
+import org.firstinspires.ftc.teamcode.mechanism.Shooter;
+import org.firstinspires.ftc.teamcode.mechanism.Transfer;
+import org.firstinspires.ftc.teamcode.mechanism.Turret;
+import org.firstinspires.ftc.teamcode.mechanism.Vision;
+
+import java.lang.reflect.InvocationTargetException;
+
+public class TestRegistry {
+    static class GenericTest extends OpMode {
+        public Class<? extends Mechanism> mechanismClass;
+        Mechanism mechanism;
+        TelemetryManager telemetryM;
+
+        public GenericTest(Class<? extends Mechanism> m) {
+            super();
+            this.mechanismClass = m;
+        }
+
+        @Override
+        public void init() {
+            telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+            try {
+                mechanism = mechanismClass.getConstructor(HardwareMap.class, Telemetry.class).newInstance(hardwareMap, telemetry);
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                telemetryM.addLine("ERROR: Failed to construct " + mechanismClass.getSimpleName());
+                telemetryM.addLine(String.valueOf(e));
+                telemetryM.update(telemetry);
+                return;
+            }
+            telemetryM.update(telemetry);
+            telemetry.update();
+        }
+
+        @Override
+        public void loop() {
+            mechanism.loop();
+            mechanism.test(gamepad1, gamepad2, telemetryM, null);
+
+            telemetryM.addLine(mechanism.toString());
+            telemetryM.update(telemetry);
+            telemetry.update();
+        }
+
+        public OpModeMeta meta() {
+            return new OpModeMeta.Builder()
+                    .setName("TEST: " + mechanismClass.getSimpleName())
+                    .setFlavor(OpModeMeta.Flavor.TELEOP)
+                    .setGroup("Tests")
+                    .setSource(OpModeMeta.Source.EXTERNAL_LIBRARY)
+                    .build();
+        }
+    }
+
+
+    @OpModeRegistrar
+    public static void register(OpModeManager manager) {
+        if (!Globals.hideTests) {
+            GenericTest[] modes = {
+                    // TODO: Add more testable mechanisms
+                    new GenericTest(Intake.class),
+                    new GenericTest(Shooter.class),
+                    new GenericTest(Transfer.class),
+                    new GenericTest(Hood.class),
+                    new GenericTest(Turret.class),
+                    new GenericTest(Flowermabob.class),
+                    new GenericTest(Vision.class)
+            };
+
+            for (GenericTest mode : modes) {
+                manager.register(mode.meta(), mode);
+            }
+        }
+    }
+}

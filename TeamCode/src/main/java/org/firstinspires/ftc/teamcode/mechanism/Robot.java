@@ -50,6 +50,7 @@ public class Robot extends Mechanism {
     public Hood hood() {return hood;}
     public Turret turret() {return turret;}
     public Flowermabob flowermabob() {return flowermabob;}
+    public Vision vision() {return vision;}
     public Pose currentPose() {return follower.pose();}
 
     public double shooterVelocityFor(Pose target) {
